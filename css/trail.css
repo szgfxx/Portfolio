@@ -1,0 +1,542 @@
+body.trail {
+  background: #13301f;
+  color: var(--ink);
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  position: fixed;
+  z-index: 10;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--cream);
+  font-size: 15px;
+  background: linear-gradient(180deg, rgba(8, 20, 12, 0.6), rgba(8, 20, 12, 0));
+}
+.topbar a {
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+.topbar a:hover,
+.topbar a:focus-visible {
+  opacity: 1;
+}
+.topbar__back,
+.topbar__alt {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.topbar__nav {
+  display: flex;
+  gap: clamp(10px, 2vw, 26px);
+}
+.topbar__nav a {
+  position: relative;
+}
+.topbar__nav a.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  background: var(--dhaka);
+  background-size: 6px 6px;
+  border-radius: 2px;
+}
+@media (max-width: 760px) {
+  .topbar__nav {
+    display: none;
+  }
+}
+
+/* ---------- altimeter ---------- */
+.altimeter {
+  position: fixed;
+  z-index: 9;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--cream);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.altimeter__track {
+  position: relative;
+  width: 4px;
+  height: 36vh;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.25);
+}
+.altimeter__fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0%;
+  border-radius: 2px;
+  background: var(--dhaka);
+  background-size: 4px 4px;
+}
+.altimeter__dot {
+  position: absolute;
+  left: 50%;
+  bottom: 0%;
+  width: 14px;
+  height: 14px;
+  margin: 0 0 -7px -7px;
+  border-radius: 50%;
+  background: #c2412d;
+  border: 2px solid var(--cream);
+}
+.altimeter__read {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+}
+.altimeter__label {
+  font-size: 12px;
+  max-width: 90px;
+  text-align: center;
+  line-height: 1.2;
+  opacity: 0.85;
+}
+@media (max-width: 760px) {
+  .altimeter {
+    top: auto;
+    bottom: 12px;
+    right: 12px;
+    transform: none;
+    flex-direction: row;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: rgba(10, 25, 15, 0.55);
+  }
+  .altimeter__track,
+  .altimeter__label {
+    display: none;
+  }
+}
+
+/* ---------- stages ---------- */
+#trail-content {
+  position: relative;
+  z-index: 1;
+}
+.stage {
+  position: relative;
+  min-height: 120vh;
+  padding: 18vh 16px 10vh;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.stage--tall {
+  min-height: 160vh;
+}
+.stage--gap {
+  min-height: 90vh;
+}
+
+/* intro */
+.stage--intro {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 10vh;
+}
+.intro {
+  color: var(--cream);
+  text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55);
+  max-width: 760px;
+}
+.intro__kicker {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+}
+.intro__name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(46px, 9vw, 108px);
+  line-height: 1;
+}
+.intro__headline {
+  margin: 0.4em 0 0;
+  font-size: clamp(18px, 2.4vw, 24px);
+}
+.intro__loc {
+  margin: 0.2em 0 0;
+  opacity: 0.85;
+}
+.intro__loc:empty {
+  display: none;
+}
+.intro__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.intro__scroll {
+  margin-top: 9vh;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  opacity: 0.85;
+}
+.intro__scroll span {
+  display: block;
+  font-size: 22px;
+  animation: nudge 1.6s ease-in-out infinite;
+}
+@keyframes nudge {
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+.pill {
+  display: inline-block;
+  padding: 7px 16px;
+  border-radius: 99px;
+  border: 1.5px solid rgba(255, 248, 234, 0.75);
+  background: rgba(15, 35, 22, 0.35);
+  color: var(--cream);
+  text-decoration: none;
+  font-size: 15px;
+  text-shadow: none;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s, transform 0.2s;
+}
+.pill:hover,
+.pill:focus-visible {
+  background: rgba(255, 248, 234, 0.2);
+  transform: translateY(-2px);
+}
+.pill--solid {
+  background: var(--red);
+  border-color: var(--red);
+}
+
+/* ---------- lokta paper cards ---------- */
+.lokta {
+  position: relative;
+  max-width: 540px;
+  padding: 0 28px 24px;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(140, 110, 60, 0.08) 0 1px, transparent 2px) 0 0 / 7px 9px,
+    radial-gradient(circle at 70% 60%, rgba(140, 110, 60, 0.07) 0 1px, transparent 2px) 0 0 / 11px 13px,
+    linear-gradient(170deg, #f7eedb, #ecdfc2);
+  border-radius: 3px 5px 4px 6px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    0 3px 8px rgba(0, 0, 0, 0.2);
+}
+.lokta > .dhaka-strip {
+  margin: 0 -28px 18px;
+  border-radius: 3px 5px 0 0;
+}
+.lokta::before {
+  /* string it hangs from */
+  content: "";
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  width: 2px;
+  height: 34px;
+  background: rgba(240, 225, 190, 0.6);
+}
+.lokta--left {
+  margin-right: auto;
+  margin-left: max(0px, 4vw);
+  --tilt: -1.2deg;
+}
+.lokta--right {
+  margin-left: auto;
+  margin-right: max(0px, 6vw);
+  --tilt: 1.2deg;
+}
+.lokta h2,
+.section-sign h2 {
+  margin: 0 0 12px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.1;
+}
+.lokta h2 span,
+.section-sign h2 span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.45em;
+  color: var(--red);
+  letter-spacing: 0.04em;
+}
+.lokta h3 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.2;
+}
+.lokta p {
+  margin: 0 0 12px;
+}
+.lokta__kicker {
+  margin: 0 0 4px !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+.lokta ul {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+.lokta li {
+  margin-bottom: 6px;
+}
+.job__when {
+  margin: 0 0 4px !important;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--red);
+}
+.job__org {
+  margin: 2px 0 0 !important;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.section-sign {
+  display: inline-block;
+  margin: 0 0 8vh max(0px, 4vw);
+  padding: 14px 26px 10px;
+  color: #fff3dc;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 22px, rgba(0, 0, 0, 0.08) 22px 23px),
+    linear-gradient(180deg, #8f5e33, #5f3a1d);
+  border-radius: 4px;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+  --tilt: -2deg;
+}
+.section-sign .lokta__kicker {
+  color: #f1d8ad;
+}
+.section-sign h2 span {
+  color: #ffd27a;
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 18vh;
+}
+
+/* ---------- stone tablets for projects ---------- */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.stone {
+  position: relative;
+  padding: 24px 24px 20px;
+  color: #f4f0e6;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.08), transparent 60%),
+    radial-gradient(circle at 80% 90%, rgba(0, 0, 0, 0.2), transparent 50%),
+    linear-gradient(160deg, #7c776c, #545048);
+  border-radius: 22px 30px 18px 26px / 26px 18px 30px 22px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -6px 0 rgba(0, 0, 0, 0.15),
+    0 16px 34px rgba(0, 0, 0, 0.4);
+  --tilt: 0deg;
+}
+.stone::after {
+  /* moss */
+  content: "";
+  position: absolute;
+  left: 10%;
+  top: -6px;
+  width: 38%;
+  height: 14px;
+  border-radius: 10px;
+  background: radial-gradient(circle at 30% 60%, #6f9a3e, #3f6a25);
+  opacity: 0.9;
+}
+.stone h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 24px;
+}
+.stone p {
+  margin: 0 0 10px;
+}
+.stone__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stone__tags span {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: rgba(0, 0, 0, 0.25);
+}
+.stone__link {
+  font-weight: 700;
+  color: #ffd27a;
+  text-decoration: none;
+}
+
+.skillgroup + .skillgroup {
+  margin-top: 14px;
+}
+.skillgroup h3 {
+  font-size: 16px;
+  margin-bottom: 6px;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chips span {
+  padding: 3px 12px;
+  border-radius: 99px;
+  background: #fff8ea;
+  border: 1.5px solid #c9b48a;
+  font-size: 15px;
+}
+.edu + .edu {
+  margin-top: 18px;
+}
+
+/* placeholders stand out so nothing ships half-done by accident */
+.todo {
+  background: repeating-linear-gradient(-45deg, rgba(227, 165, 38, 0.18) 0 8px, transparent 8px 16px);
+  outline: 1px dashed rgba(179, 32, 42, 0.5);
+  outline-offset: 2px;
+}
+
+/* ---------- reveal ---------- */
+.reveal {
+  opacity: 0;
+  transform: translateY(50px) rotate(calc(var(--tilt, 0deg) * 3));
+  transition: opacity 0.8s ease, transform 0.9s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+.reveal.is-in {
+  opacity: 1;
+  transform: rotate(var(--tilt, 0deg));
+}
+
+/* ---------- summit ---------- */
+.stage--summit {
+  min-height: 130vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  text-align: center;
+  padding-top: 14vh;
+}
+.summit {
+  max-width: 680px;
+  color: #2a1d14;
+  padding: 26px 26px 22px;
+  border-radius: 18px;
+  background: rgba(255, 246, 228, 0.78);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 20px 50px rgba(40, 30, 10, 0.3);
+}
+.summit .intro__kicker {
+  color: var(--red);
+}
+.summit__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(34px, 6vw, 64px);
+  line-height: 1.05;
+}
+.summit__sub {
+  margin: 0.5em 0 0;
+}
+.summit__contact h3 {
+  margin: 22px 0 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 26px;
+}
+.summit__contact h3 span {
+  font-family: var(--font-body);
+  font-size: 0.6em;
+  color: var(--red);
+}
+.summit .pill {
+  color: var(--ink);
+  border-color: var(--ink);
+  background: rgba(255, 255, 255, 0.4);
+}
+.summit .pill--solid {
+  color: #fff;
+  background: var(--red);
+  border-color: var(--red);
+}
+.summit__foot {
+  margin: 20px 0 0;
+  font-size: 15px;
+}
+.summit__sagun {
+  position: absolute;
+  bottom: 6vh;
+  left: max(16px, 8vw);
+  width: clamp(90px, 13vw, 150px);
+  aspect-ratio: 200 / 360;
+}
+@media (max-width: 760px) {
+  .stage {
+    min-height: 110vh;
+    padding-top: 14vh;
+  }
+  .stage--tall {
+    min-height: 140vh;
+  }
+  .lokta,
+  .lokta--left,
+  .lokta--right {
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0 20px 18px;
+  }
+  .lokta > .dhaka-strip {
+    margin: 0 -20px 16px;
+  }
+  .section-sign {
+    margin-left: 0;
+  }
+  .summit__sagun {
+    left: 12px;
+    bottom: 2vh;
+  }
+}

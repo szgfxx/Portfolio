@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sagun, Unserious</title>
+  <meta name="description" content="The scenic route: Sagun's hobbies, random facts, and general nonsense by Phewa lake." />
+  <meta name="theme-color" content="#4aa3c4" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;700&family=Yatra+One&family=JetBrains+Mono:wght@400;600&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/whimsy.css" />
+</head>
+<body class="whimsy">
+  <canvas id="lake-scene" class="scene-canvas" aria-hidden="true"></canvas>
+
+  <header class="w-top">
+    <a href="index.html">← back to the fork</a>
+    <a href="this-way.html">serious side →</a>
+  </header>
+
+  <main class="w-main">
+    <section class="w-hero">
+      <div class="w-hero__text">
+        <p class="w-kicker">the scenic route · lakeside, Pokhara</p>
+        <h1>Hi, it’s <span>unserious</span> Sagun.</h1>
+        <p class="w-intro" data-w="intro"></p>
+        <p class="w-hint">(poke her)</p>
+      </div>
+      <button class="w-sagun" type="button" aria-label="Poke Sagun for a random fun fact">
+        <span class="w-bubble" role="status" aria-live="polite">psst. click me.</span>
+        <span class="w-sagun__fig" data-sagun="wave"></span>
+      </button>
+    </section>
+
+    <section class="w-section">
+      <h2>Things I do instead of sleeping</h2>
+      <div class="w-line" aria-hidden="true"></div>
+      <div class="polaroids" data-w="hobbies"></div>
+    </section>
+
+    <section class="w-section">
+      <h2>Character stats</h2>
+      <p class="w-note">self-reported. not peer reviewed.</p>
+      <div class="stats" data-w="stats"></div>
+    </section>
+
+    <section class="w-section">
+      <h2>Currently floating in my head</h2>
+      <div class="boats" data-w="obsessions"></div>
+    </section>
+
+    <section class="w-section w-momo">
+      <h2>Emergency momo button</h2>
+      <p class="w-note">for when the vibes are low.</p>
+      <button class="momo" type="button" aria-label="Eat a momo">
+        <span class="momo__plate" aria-hidden="true">🥟</span>
+      </button>
+      <p class="momo__count" aria-live="polite"><span id="momo-n">0</span> momos eaten</p>
+      <p class="momo__msg" id="momo-msg"></p>
+    </section>
+
+    <footer class="w-foot">
+      <p>Enough fun? <a href="this-way.html">Climb the serious trail →</a></p>
+    </footer>
+  </main>
+
+  <script src="js/content.js"></script>
+  <script src="js/scenery.js"></script>
+  <script src="js/sagun.js"></script>
+  <script src="js/whimsy.js"></script>
+</body>
+</html>

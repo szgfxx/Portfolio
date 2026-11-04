@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sagun Bhandari</title>
+  <meta name="description" content="Namaste! Were you looking for Sagun? Go this way for the portfolio, or that way for the fun stuff." />
+  <meta name="theme-color" content="#2b3a67" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;700&family=Yatra+One&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/hello.css" />
+  <link rel="prefetch" href="this-way.html" />
+  <link rel="prefetch" href="that-way.html" />
+</head>
+<body class="hello">
+  <canvas id="hello-scene" class="scene-canvas" aria-hidden="true"></canvas>
+
+  <main class="hello__ui">
+    <header class="hello__title">
+      <p class="hello__namaste" lang="ne">नमस्ते!</p>
+      <h1><span class="hello__line">Were you looking for</span> <span class="hello__line"><span class="hello__name">Sagun</span>?</span></h1>
+    </header>
+
+    <div class="crossroads">
+      <div class="crossroads__sagun">
+        <div class="crossroads__figure" data-sagun="wave"></div>
+      </div>
+
+      <nav class="signpost" aria-label="Choose a trail">
+        <a class="sign sign--right" href="this-way.html" data-go="this">
+          <span class="sign__main">go this way</span>
+        </a>
+        <a class="sign sign--left" href="that-way.html" data-go="that">
+          <span class="sign__main">go that way</span>
+        </a>
+        <div class="signpost__pole"></div>
+      </nav>
+    </div>
+
+    <p class="hello__keys" aria-hidden="true">tip: press <kbd>→</kbd> or <kbd>←</kbd></p>
+  </main>
+
+  <div class="veil" aria-hidden="true"></div>
+
+  <script src="js/scenery.js"></script>
+  <script src="js/sagun.js"></script>
+  <script src="js/hello.js"></script>
+</body>
+</html>

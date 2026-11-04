@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sagun Bhandari · Portfolio</title>
+  <meta name="description" content="Sagun Bhandari's portfolio — climb the trail from Phewa lake up to Sarangkot." />
+  <meta name="theme-color" content="#13301f" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;700&family=Yatra+One&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/trail.css" />
+</head>
+<body class="trail">
+  <canvas id="trail-scene" class="scene-canvas" aria-hidden="true"></canvas>
+
+  <header class="topbar">
+    <a class="topbar__back" href="index.html">← back to the fork</a>
+    <nav class="topbar__nav" aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#summit">Contact</a>
+    </nav>
+    <a class="topbar__alt" href="that-way.html" title="the fun side">that way ↝</a>
+  </header>
+
+  <aside class="altimeter" aria-hidden="true">
+    <div class="altimeter__track"><div class="altimeter__fill"></div><div class="altimeter__dot"></div></div>
+    <div class="altimeter__read"><span id="alt-m">822</span> m</div>
+    <div class="altimeter__label" id="alt-label">Phewa lakeside</div>
+  </aside>
+
+  <main id="trail-content">
+    <section class="stage stage--intro" id="top">
+      <div class="intro">
+        <p class="intro__kicker">~/trailhead · 822 m</p>
+        <h1 class="intro__name" data-fill="name"></h1>
+        <p class="intro__headline" data-fill="headline"></p>
+        <p class="intro__loc" data-fill="location"></p>
+        <div class="intro__links" data-fill="links"></div>
+        <p class="intro__scroll">scroll to start climbing<span>↓</span></p>
+      </div>
+    </section>
+
+    <section class="stage" id="about" data-alt="Forest trail">
+      <article class="lokta lokta--left reveal">
+        <div class="dhaka-strip"></div>
+        <p class="lokta__kicker">about.txt</p>
+        <h2>About me <span lang="ne">मेरो बारेमा</span></h2>
+        <div data-fill="about"></div>
+      </article>
+    </section>
+
+    <section class="stage stage--tall" id="experience" data-alt="Stone stairs">
+      <div class="section-sign reveal">
+        <p class="lokta__kicker">experience.log</p>
+        <h2>Experience <span lang="ne">अनुभव</span></h2>
+      </div>
+      <div class="timeline" data-fill="experience"></div>
+    </section>
+
+    <section class="stage stage--tall" id="projects" data-alt="Chautari rest stop">
+      <div class="section-sign reveal">
+        <p class="lokta__kicker">projects.exe</p>
+        <h2>Projects <span lang="ne">परियोजनाहरू</span></h2>
+      </div>
+      <div class="projects" data-fill="projects"></div>
+    </section>
+
+    <section class="stage" id="skills" data-alt="Rhododendron grove">
+      <article class="lokta lokta--right reveal">
+        <div class="dhaka-strip"></div>
+        <p class="lokta__kicker">skills.ini</p>
+        <h2>Skills <span lang="ne">सीपहरू</span></h2>
+        <div data-fill="skills"></div>
+      </article>
+    </section>
+
+    <section class="stage" id="education" data-alt="Near the ridge">
+      <article class="lokta lokta--left reveal">
+        <div class="dhaka-strip"></div>
+        <p class="lokta__kicker">education.doc</p>
+        <h2>Education <span lang="ne">शिक्षा</span></h2>
+        <div data-fill="education"></div>
+      </article>
+    </section>
+
+    <section class="stage stage--gap" aria-hidden="true"></section>
+
+    <section class="stage stage--summit" id="summit" data-alt="Sarangkot summit">
+      <div class="summit">
+        <p class="intro__kicker">sarangkot · 1,592 m</p>
+        <h2 class="summit__title">You made it to the top.</h2>
+        <p class="summit__sub">That’s Phewa down there, and Machhapuchhre up there. Not bad for a scroll.</p>
+        <div class="summit__contact">
+          <h3>Say hi <span lang="ne">सम्पर्क</span></h3>
+          <div class="intro__links" data-fill="links"></div>
+        </div>
+        <p class="summit__foot">
+          <a href="index.html">back to the fork</a> ·
+          <a href="that-way.html">see the fun side</a> ·
+          <a href="#top">walk back down ↑</a>
+        </p>
+      </div>
+      <div class="summit__sagun" data-sagun="wave"></div>
+    </section>
+  </main>
+
+  <script src="js/content.js"></script>
+  <script src="js/scenery.js"></script>
+  <script src="js/sagun.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/trail.js"></script>
+</body>
+</html>
