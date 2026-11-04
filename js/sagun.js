@@ -250,7 +250,8 @@
     <ellipse cx="80" cy="98" rx="6" ry="3.6" fill="#e07b72" opacity=".35"/>
     <ellipse cx="120" cy="98" rx="6" ry="3.6" fill="#e07b72" opacity=".35"/>
     <!-- soft, small smile; darker lips -->
-    <path d="M93 103 Q100 107 107 103 Q100 105 93 103Z" fill="#5e1420" stroke="#5e1420" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="sagun__smile" d="M93 103 Q100 107 107 103 Q100 105 93 103Z" fill="#5e1420" stroke="#5e1420" stroke-width="2.2" stroke-linejoin="round"/>
+    <path class="sagun__mouth" d="M94 103.5 Q100 102.5 106 103.5 Q105 108.5 100 108.8 Q95 108.5 94 103.5Z" fill="#3a0c14" stroke="#5e1420" stroke-width="1.3" stroke-linejoin="round"/>
     <path d="M99 92 q1 3 3 2" stroke="var(--skin-shade)" stroke-width="2" fill="none" stroke-linecap="round"/>
 
     <!-- front hair: ONE continuous shape from jaw, over the crown, to jaw -->

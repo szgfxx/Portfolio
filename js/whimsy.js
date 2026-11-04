@@ -49,7 +49,21 @@
     bubble.classList.toggle("todo", /^\s*TODO/i.test(text));
     bubble.textContent = text;
     window.SagunAudio.pop();
+    talk(text);
   }
+  // she says it out loud (when sound is on) and her mouth moves while she does
+  let talkT = 0;
+  function talk(text) {
+    clearTimeout(talkT);
+    const stop = () => btn.classList.remove("is-talking");
+    const voiced = window.SagunAudio.speak(text, () => btn.classList.add("is-talking"), stop);
+    if (!voiced) {
+      // silent mode: still mouth the words for a moment
+      btn.classList.add("is-talking");
+      talkT = setTimeout(stop, Math.min(4000, 400 + text.length * 45));
+    }
+  }
+
   // which line belongs to the current stretch of the walk
   function lineAt() {
     const top = walkEl.offsetTop, h = walkEl.offsetHeight;

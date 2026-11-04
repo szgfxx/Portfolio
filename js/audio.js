@@ -1,13 +1,13 @@
 /* Sound for the walks — all generated live with the Web Audio API, no files.
-   - music: an original folk-style loop — bansuri-like flute over a drone,
-     with madal-style drums
+   - music: an original slow-soul groove — walking bass, warm keys,
+     finger snaps and a vibraphone that improvises over the chords
    - ambience: lake water + birds, or meadow birds + mountain wind
    - effects: a soft pop for each speech bubble, footsteps while walking
    Browsers only allow sound after a click, so a 🔈/🔊 button turns it on;
    the choice is remembered. */
 (function () {
   const AC = window.AudioContext || window.webkitAudioContext;
-  const api = { pop() {}, setWalking() {}, set() {}, surface: "stone" };
+  const api = { pop() {}, setWalking() {}, set() {}, speak() {}, surface: "stone" };
   window.SagunAudio = api;
   if (!AC) return;
 
@@ -60,6 +60,7 @@
       if (!started) start();
     } else if (ctx) {
       master.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
+      if (synth) synth.cancel();
     }
   }
 
@@ -70,7 +71,7 @@
     master.gain.value = 0;
     const comp = ctx.createDynamicsCompressor();
     master.connect(comp).connect(ctx.destination);
-    musicBus = gainTo(master, 0.32);
+    musicBus = gainTo(master, 0.14);
     ambBus = gainTo(master, 0.5);
     sfxBus = gainTo(master, 0.45);
     // a soft hall made from decaying noise
@@ -102,128 +103,144 @@
   /* ---------- instruments ---------- */
   const hz = (midi) => 440 * Math.pow(2, (midi - 69) / 12);
 
-  function flute(t, midi, dur) {
+  /* ---------- the tune: an original slow-soul groove ----------
+     warm keys on 2 and 4, a walking bass, finger snaps, and a soft
+     vibraphone line that improvises over the chords. */
+  function bass(t, midi, dur) {
     const o = ctx.createOscillator(), o2 = ctx.createOscillator();
-    o.type = "triangle";
-    o2.type = "sine";
+    o.type = "sine";
+    o2.type = "triangle";
     o.frequency.value = hz(midi);
-    o2.frequency.value = hz(midi) * 2;
-    // gentle vibrato that blooms after the attack, like a held bansuri note
-    const vib = ctx.createOscillator(), vg = ctx.createGain();
-    vib.frequency.value = 5.2;
-    vg.gain.setValueAtTime(0, t);
-    vg.gain.linearRampToValueAtTime(hz(midi) * 0.006, t + Math.min(0.35, dur * 0.6));
-    vib.connect(vg).connect(o.frequency);
-    vg.connect(o2.frequency);
+    o2.frequency.value = hz(midi);
     const lp = ctx.createBiquadFilter();
     lp.type = "lowpass";
-    lp.frequency.value = 2600;
-    const g = ctx.createGain();
+    lp.frequency.value = 700;
+    const g = ctx.createGain(), g2 = ctx.createGain();
+    g2.gain.value = 0.35;
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(0.32, t + 0.07);
-    g.gain.setTargetAtTime(0.22, t + 0.1, 0.2);
-    g.gain.setTargetAtTime(0, t + dur * 0.92, 0.06);
-    const g2 = ctx.createGain();
-    g2.gain.value = 0.12;
-    o.connect(lp);
-    o2.connect(g2).connect(lp);
-    lp.connect(g);
+    g.gain.linearRampToValueAtTime(0.55, t + 0.015);
+    g.gain.setTargetAtTime(0.3, t + 0.03, 0.12);
+    g.gain.setTargetAtTime(0, t + dur * 0.85, 0.04);
+    o.connect(g);
+    o2.connect(g2).connect(lp).connect(g);
     g.connect(musicBus);
-    g.connect(reverb);
-    [o, o2, vib].forEach((x) => {
+    [o, o2].forEach((x) => {
       x.start(t);
-      x.stop(t + dur + 0.5);
+      x.stop(t + dur + 0.2);
     });
   }
-
-  function pluck(t, midi, gain) {
-    const o = ctx.createOscillator();
-    o.type = "triangle";
+  function keys(t, notes, dur, v) {
+    // electric-piano-ish: sine + a bell partial, gentle decay
+    notes.forEach((m) => {
+      const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), g2 = ctx.createGain();
+      o.type = "sine";
+      o2.type = "sine";
+      o.frequency.value = hz(m);
+      o2.frequency.value = hz(m) * 3.0;
+      g2.gain.setValueAtTime(0.25, t);
+      g2.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.11 * v, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      o2.connect(g2).connect(g);
+      o.connect(g);
+      g.connect(musicBus);
+      g.connect(reverb);
+      [o, o2].forEach((x) => {
+        x.start(t);
+        x.stop(t + dur + 0.05);
+      });
+    });
+  }
+  function vibes(t, midi, dur) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), trem = ctx.createOscillator(), tg = ctx.createGain();
+    o.type = "sine";
     o.frequency.value = hz(midi);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(gain, t);
-    g.gain.exponentialRampToValueAtTime(0.0008, t + 2.6);
+    trem.frequency.value = 5.5;
+    tg.gain.value = 0.05;
+    trem.connect(tg).connect(g.gain);
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.2, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.001, t + Math.max(0.6, dur * 1.6));
     o.connect(g);
     g.connect(musicBus);
     g.connect(reverb);
     o.start(t);
-    o.stop(t + 2.7);
+    trem.start(t);
+    o.stop(t + dur * 1.6 + 0.7);
+    trem.stop(t + dur * 1.6 + 0.7);
   }
-
-  function dhin(t, v) {
-    // the madal's deep left-hand stroke
-    const o = ctx.createOscillator();
-    o.frequency.setValueAtTime(150, t);
-    o.frequency.exponentialRampToValueAtTime(62, t + 0.18);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.55 * v, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
-    o.connect(g).connect(musicBus);
-    o.start(t);
-    o.stop(t + 0.4);
-  }
-  function ta(t, v) {
-    // the bright right-hand slap
-    const n = noise(), bp = ctx.createBiquadFilter(), g = ctx.createGain();
-    bp.type = "bandpass";
-    bp.frequency.value = 1900;
-    bp.Q.value = 1.4;
-    g.gain.setValueAtTime(0.35 * v, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
-    n.connect(bp).connect(g).connect(musicBus);
+  function snap(t, v) {
+    const n = noise(), hp = ctx.createBiquadFilter(), g = ctx.createGain();
+    hp.type = "bandpass";
+    hp.frequency.value = 2600;
+    hp.Q.value = 2;
+    g.gain.setValueAtTime(0.5 * v, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+    n.connect(hp).connect(g);
+    g.connect(musicBus);
+    g.connect(reverb);
     n.start(t, Math.random());
-    n.stop(t + 0.09);
-    const o = ctx.createOscillator(), og = ctx.createGain();
-    o.frequency.value = 340;
-    og.gain.setValueAtTime(0.12 * v, t);
-    og.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
-    o.connect(og).connect(musicBus);
-    o.start(t);
-    o.stop(t + 0.1);
+    n.stop(t + 0.08);
+  }
+  function hat(t, v) {
+    const n = noise(), hp = ctx.createBiquadFilter(), g = ctx.createGain();
+    hp.type = "highpass";
+    hp.frequency.value = 7000;
+    g.gain.setValueAtTime(0.07 * v, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    n.connect(hp).connect(g).connect(musicBus);
+    n.start(t, Math.random());
+    n.stop(t + 0.05);
   }
 
-  /* ---------- the tune: generative, pentatonic, never quite the same ---------- */
-  const ROOT = 62; // D
-  const SCALE = [0, 2, 4, 7, 9, 12, 14, 16, 19]; // major pentatonic over two octaves
-  const MADAL = [1, 0, 2, 2, 1, 2, 0, 2]; // 1 = dhin, 2 = ta, per eighth note
-  let nextT = 0, step = 0, idx = 4, noteLeft = 0;
+  // key of D♭ (MIDI 49); I – vi – ii – V, then I – IV – I – V
+  const KEY = 49;
+  const PROG = [
+    [0, [0, 4, 7, 11]], [9, [0, 3, 7, 10]], [2, [0, 3, 7, 10]], [7, [0, 4, 7, 10]],
+    [0, [0, 4, 7, 11]], [5, [0, 4, 7, 11]], [0, [0, 4, 7, 9]], [7, [0, 4, 7, 10]],
+  ];
+  const PENTA = [0, 2, 4, 7, 9];
+  let nextT = 0, step = 0, mel = 7, rest = 0;
 
   function schedule() {
     if (!on) return;
-    const bpm = scene === "mountain" ? 76 : 88;
+    const bpm = scene === "mountain" ? 72 : 80;
     const e8 = 60 / bpm / 2;
     while (nextT < ctx.currentTime + 0.4) {
       const t = nextT;
-      const bar = Math.floor(step / 8), inBar = step % 8;
-      // drone: root and fifth every bar
-      if (inBar === 0) {
-        pluck(t, ROOT - 12, 0.16);
-        pluck(t, ROOT - 5, 0.09);
-        if (bar % 2) pluck(t + e8 * 4, ROOT - 12, 0.1);
+      const bar = Math.floor(step / 8) % PROG.length, inBar = step % 8;
+      const [root, ch] = PROG[bar];
+      const nextRoot = PROG[(bar + 1) % PROG.length][0];
+      const swing = inBar % 2 ? e8 * 0.18 : 0; // lazy swung eighths
+      // walking bass in quarters: root, third, fifth, then a step into the next chord
+      if (inBar % 2 === 0) {
+        const q = inBar / 2;
+        const lo = KEY - 24 + root;
+        const n = q === 0 ? lo : q === 1 ? lo + ch[1] : q === 2 ? lo + 7 : KEY - 24 + nextRoot + (nextRoot > root ? -1 : 1);
+        bass(t, n, e8 * 2);
       }
-      // madal
-      const d = MADAL[inBar], dv = levels.drums;
+      // keys on 2 and 4
+      if (inBar === 2 || inBar === 6) keys(t, ch.map((c) => KEY - 12 + root + c + (root > 6 ? -12 : 0)), e8 * 1.4, 1);
+      // snaps on 2 and 4, a whisper of hi-hat on the off-beats
+      const dv = levels.drums;
       if (dv > 0.02) {
-        if (d === 1) dhin(t, dv);
-        else if (d === 2) ta(t, dv * (inBar % 2 ? 0.8 : 1));
+        if (inBar === 2 || inBar === 6) snap(t, dv);
+        if (inBar % 2) hat(t + swing, dv);
       }
-      // flute phrase: wander the scale, rest now and then, land home every 4 bars
-      if (noteLeft <= 0) {
-        const phraseEnd = bar % 4 === 3 && inBar >= 4;
-        if (phraseEnd) {
-          if (inBar === 4) flute(t, ROOT + 12, e8 * 4);
-          noteLeft = 8 - inBar;
-          idx = 5;
-        } else if (Math.random() < 0.18) {
-          noteLeft = 2; // breathe
-        } else {
-          idx = Math.max(0, Math.min(SCALE.length - 1, idx + [-2, -1, -1, 1, 1, 2][(Math.random() * 6) | 0]));
-          const len = Math.random() < 0.55 ? 2 : Math.random() < 0.5 ? 1 : 3;
-          flute(t, ROOT + SCALE[idx], e8 * len);
-          noteLeft = len;
+      // vibraphone: chord tones and pentatonic steps, with breathing room
+      const phrase = Math.floor(step / 32) % 2; // play 4 bars, mostly rest 4
+      if (rest > 0) rest--;
+      else if (phrase === 0 || Math.random() < 0.12) {
+        if (Math.random() < 0.62) {
+          const opts = PENTA.map((p) => p + 12).concat(ch.map((c) => (root + c) % 12 + 12));
+          const target = opts[(Math.random() * opts.length) | 0];
+          mel = Math.abs(target - mel) > 7 ? mel + Math.sign(target - mel) * 2 : target;
+          const len = Math.random() < 0.6 ? 2 : Math.random() < 0.5 ? 1 : 3;
+          vibes(t + swing, KEY + mel, e8 * len);
+          rest = len - 1;
         }
       }
-      noteLeft--;
       step++;
       nextT += e8;
     }
@@ -295,6 +312,58 @@
     setInterval(schedule, 100);
     startAmbience();
   }
+
+  /* ---------- her voice: the browser's own text-to-speech ---------- */
+  const synth = window.speechSynthesis;
+  let voice = null;
+  function pickVoice() {
+    if (!synth) return;
+    const vs = synth.getVoices();
+    const pref = ["Veena", "Isha", "Google हिन्दी", "Samantha", "Google UK English Female", "Karen", "Moira", "Tessa"];
+    voice =
+      pref.map((n) => vs.find((v) => v.name.indexOf(n) === 0)).find(Boolean) ||
+      vs.find((v) => /en-IN/i.test(v.lang)) ||
+      vs.find((v) => /^en/i.test(v.lang) && /female/i.test(v.name)) ||
+      vs.find((v) => /^en/i.test(v.lang)) ||
+      null;
+  }
+  if (synth) {
+    pickVoice();
+    synth.addEventListener && synth.addEventListener("voiceschanged", pickVoice);
+  }
+  // words a default English voice would mangle, spelled the way she'd say them
+  const SAY = [
+    [/नमस्ते/g, "namaste"], [/你好\s*\(nǐ hǎo\)/g, "nee how"], [/你好/g, "nee how"],
+    [/नकुहिने/g, "nakuhine"], [/कुहिने/g, "kuhine"], [/¡Hola!/g, "Hola!"],
+    [/C\. elegans/g, "C elegans"], [/Şirince/g, "Shirinjeh"], [/\bPASU\b/g, "pah-soo"],
+    [/…/g, ", "], [/\(([^)]*)\)/g, ", $1, "],
+    [/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, ""],
+  ];
+  api.speak = function (text, onStart, onEnd) {
+    if (!synth) return false;
+    synth.cancel();
+    if (!on || !text) return false;
+    let t = text;
+    SAY.forEach(([re, rep]) => (t = t.replace(re, rep)));
+    const u = new SpeechSynthesisUtterance(t.trim());
+    if (voice) u.voice = voice;
+    u.rate = 1.05;
+    u.pitch = 1.15;
+    u.volume = 1;
+    // duck the music while she talks
+    u.onstart = () => {
+      if (musicBus) musicBus.gain.setTargetAtTime(0.05, ctx.currentTime, 0.15);
+      onStart && onStart();
+    };
+    const done = () => {
+      if (musicBus) musicBus.gain.setTargetAtTime(0.14, ctx.currentTime, 0.4);
+      onEnd && onEnd();
+    };
+    u.onend = done;
+    u.onerror = done;
+    synth.speak(u);
+    return true;
+  };
 
   /* ---------- public bits ---------- */
   api.scene = function (name) {

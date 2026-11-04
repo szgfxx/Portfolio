@@ -231,3 +231,32 @@ body.trail .sound-toggle {
   left: 16px;
   right: auto;
 }
+
+/* talking: the smile gives way to a mouth that opens and closes */
+.sagun__mouth {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: 50% 30%;
+}
+.is-talking .sagun__smile {
+  opacity: 0;
+}
+.is-talking .sagun__mouth {
+  opacity: 1;
+  animation: sagun-talk 0.26s ease-in-out infinite alternate;
+}
+@keyframes sagun-talk {
+  from { transform: scaleY(0.25); }
+  to { transform: scaleY(1); }
+}
+/* on the climb (seen from behind) a little head-bob while she talks */
+.hiker.is-talking .hiker__fig {
+  animation: hiker-nod 0.5s ease-in-out infinite alternate;
+}
+@keyframes hiker-nod {
+  from { transform: translateY(0) rotate(-0.6deg); }
+  to { transform: translateY(-1.5px) rotate(0.6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-talking .sagun__mouth { animation-duration: 0.26s !important; animation-iteration-count: infinite !important; }
+}

@@ -914,6 +914,9 @@
     void bubble.offsetWidth;
     bubble.classList.add("is-new");
     if (text) window.SagunAudio.pop();
+    hiker.classList.remove("is-talking");
+    if (text) window.SagunAudio.speak(text, () => hiker.classList.add("is-talking"), () => hiker.classList.remove("is-talking"));
+    else window.SagunAudio.speak("");
   }
 
   /* ---------- section label + active nav ---------- */
