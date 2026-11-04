@@ -36,7 +36,7 @@
   const bubble = document.querySelector(".w-bubble");
   const walkEl = document.querySelector(".w-walk");
   const facts = W8.funFacts && W8.funFacts.length ? W8.funFacts : ["hi :)"];
-  walkEl.style.height = Math.max(1, YAP.length) * 62 + "vh";
+  walkEl.style.height = Math.max(1, YAP.length) * 55 + "vh";
 
   let shown = null, typer = 0, pokeUntil = 0;
   function say(text) {

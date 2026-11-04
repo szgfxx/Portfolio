@@ -135,11 +135,11 @@ window.SAGUN = {
 
     // Click Sagun on the lakeside page to cycle through these
     funFacts: [
-      "I speak Nepali, English, Urdu/Hindi, Korean, Spanish and a little Mandarin.",
-      "I won a bronze medal at the Nepal Chemistry Olympiad.",
-      "I TA’d Morse theory in a math village in the Turkish hills.",
-      "I have spent a LOT of hours staring at tiny worms (C. elegans) under a microscope.",
-      "TODO fun fact — the weirder the better",
+      "I can say hi in 7 languages and hold a conversation in 5.",
+      "I love walking barefoot. just not on this pavement 👀",
+      "my hair changes every now and then. green tips today, who knows tomorrow.",
+      "the Duolingo owl and I are very close.",
+      "tiny worms (C. elegans) are kinda cute, honestly.",
     ],
 
     // What Sagun says while walking the lakeside — one bubble per stretch of
@@ -147,19 +147,23 @@ window.SAGUN = {
     // trash can, and the { momo: true } line is said outside her momo
     // restaurant. Add, remove or reorder freely.
     yap: [
-      "hiii. ok walk with me, just keep scrolling →",
-      "so this is Lakeside, Pokhara. shops on that side, Phewa on this side. best walk in the world, no notes.",
-      "serious me is up a mountain somewhere. this is the unserious one. hi.",
-      "fun fact: I speak Nepali, English, Urdu/Hindi, Korean, Spanish and a little Mandarin. my brain is a group chat.",
+      "hiii! I’m Sagun. come walk with me →",
+      "this is Lakeside, in Pokhara: my hometown, and my favourite place to hang out with friends.",
+      "great view, great food, a LOT of fun. that’s Phewa lake on the left 🌊",
+      "ok, fun facts about me. I love walking barefoot… just not here. (hi, feet creeps 👀)",
       { bin: true, text: "ooh a bin! green is कुहिने (compost), blue is नकुहिने (everything else). keep Phewa clean pls 🌊" },
-      "I got a bronze medal at the Nepal Chemistry Olympiad. I will be bringing this up forever.",
-      "this August I TA’d Morse theory in a tiny math village in Şirince, Turkey. math in the hills = elite.",
-      "I have spent SO many hours staring at tiny worms (C. elegans) under a microscope. we’re close now.",
-      "stuff currently living in my head: Morse theory, Bayesian updates, and momos. (not in that order.)",
-      "TODO a hobby you love, and why",
+      "I’m always taking pictures. sunsets, friends, everything 📸",
+      "I can say hi in 7 languages, and hold a conversation in 5.",
+      "I love being out and about: camping, hiking, trekking. you’ve seen the mountain page 🏔️",
+      "I also experiment with my hair every now and then. green tips today, who knows tomorrow.",
+      "I’ve spent SO many hours staring at tiny worms (C. elegans) under a microscope. they’re kinda cute, honestly.",
       { bin: true, text: "another bin!! ok I’m not obsessed with bins. Pokhara just deserves a clean lake." },
-      "TODO another hobby",
-      "TODO a weird fun fact about you",
+      "right now I’m learning to code… by building this website. hi, you’re looking at my homework 💻",
+      "I like writing math proofs that make no sense.",
+      "I’m a big education and feminism advocate, and I’ve done a lot of work on both back in Nepal.",
+      "I love helping high school students who are looking into higher education. ask me anything!",
+      "big fan of Discord and Duolingo. the owl and I are close 🦉",
+      "I feel the need to talk about a lot of things… can you tell? 😅",
       { momo: true, text: "Ah… I’m tired. I’m gonna have some momo now. Thanks for walking with me 🥟" },
     ],
 
