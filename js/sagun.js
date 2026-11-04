@@ -69,6 +69,9 @@
   }
 
   function svg(pose) {
+    // back view (hiking away from us) and its walking version
+    const back = pose === "back" || pose === "backwalk";
+    const walkCls = pose === "walk" || pose === "backwalk" ? " sagun--walk" : "";
     const id = "s" + ++uid;
     let smock = "";
     for (let y = 146; y <= 188; y += 4.2) smock += `M56 ${y.toFixed(1)} q11 1.4 22 0 t22 0 t22 0 t22 0 `;
@@ -107,7 +110,7 @@
     ]);
 
     return `
-<svg class="sagun sagun--${pose}" viewBox="0 0 200 360" role="img" aria-label="Illustration of Sagun ${pose === "wave" ? "waving" : pose === "walk" ? "walking" : "standing"}: short black hair with black-blue front pieces and green tips, wearing a cropped black smocked tube top with sequin rhododendrons and baggy cargo pants">
+<svg class="sagun sagun--${pose}${walkCls}" viewBox="0 0 200 360" role="img" aria-label="Illustration of Sagun ${back ? "seen from behind, hiking" : pose === "wave" ? "waving" : pose === "walk" ? "walking" : "standing"}: short black hair with black-blue front pieces and green tips, wearing a cropped black smocked tube top with sequin rhododendrons and baggy cargo pants">
   <defs>
     <linearGradient id="${id}-hair" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="var(--hair)"/>
@@ -147,6 +150,10 @@
   <path d="M92 110 L92 120 C92 125 89 128 83 129.5 C75 131 69 133 67 139 C65 146 66 160 67 176
            C68 186 72.6 190 72.6 196 C72.6 201 69.4 204.5 67.4 210 L132.6 210 C130.6 204.5 127.4 201 127.4 196 C127.4 190 132 186 133 176 C134 160 135 146 133 139 C131 133 125 131 117 129.5
            C111 128 108 125 108 120 L108 110 Z" fill="url(#${id}-skin)"/>
+  ${back ? `<!-- back: spine and lower-back dimples -->
+  <path d="M100 130 Q99.6 160 100 202" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".45"/>
+  <path d="M75 191 Q76.5 196 74.6 203 M125 191 Q123.5 196 125.4 203" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".45"/>
+  <path d="M94 199 q1.4 1.2 2.8 0 M103.2 199 q1.4 1.2 2.8 0" stroke="var(--skin-shade)" stroke-width="1" fill="none" stroke-linecap="round"/>` : `
   <!-- definition: chin shadow, collarbones, shoulder line, waist -->
   <path d="M93 112 Q100 118 107 112 L107 116 Q100 121 93 116Z" fill="var(--skin-shade)" opacity=".55"/>
   <path d="M84 135 Q91 133 97 136 M103 136 Q109 133 116 135" stroke="var(--skin-shade)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".8"/>
@@ -154,9 +161,11 @@
   <path d="M75 191 Q76.5 196 74.6 203 M125 191 Q123.5 196 125.4 203" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".45"/>
   <path d="M99.3 197 q.7 1.6 1.4 0" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
 
+  `}
   <!-- straight, baggy low-waist cargo pants pooling at the ankles; each leg is its own group so it can walk -->
   <g class="sagun__leg sagun__leg--l">
     <path d="M68 206 L101 206 L101 242 L98 334 Q80 338 63 334 C64 290 63.4 252 64.8 230 C65.6 219 66.8 211 68 206Z" fill="var(--pants)"/>
+    ${back ? '<path d="M76 220 h17 v15 q-8.5 4 -17 0Z" fill="var(--pants-dark)" opacity=".6"/>' : ""}
     <path d="M80 216 Q78 270 74 330 M90 222 Q90 280 88 332" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
     <path d="M65 314 q8 3 16 -1 t16 1 M64 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
     <rect x="64.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
@@ -167,6 +176,7 @@
   </g>
   <g class="sagun__leg sagun__leg--r">
     <path d="M99 206 L132 206 C133.2 211 134.4 219 135.2 230 C136.6 252 136 290 137 334 Q120 338 102 334 L99 242Z" fill="var(--pants)"/>
+    ${back ? '<path d="M107 220 h17 v15 q-8.5 4 -17 0Z" fill="var(--pants-dark)" opacity=".6"/>' : ""}
     <path d="M110 222 Q110 280 112 332 M120 216 Q122 270 126 330" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
     <path d="M103 314 q8 3 16 -1 t17 1 M103 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
     <rect x="120.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
@@ -188,11 +198,14 @@
   <path d="M72 190.2 Q100 193.4 128 190.2" stroke="var(--skin-shade)" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>
 
   </g>
+  ${back ? "" : `
   ${rhodo(85.7, 155, 0.9)}
   ${rhodo(114.3, 155, 0.9)}
   ${rhodo(100.0, 166, 0.9)}
   ${rhodo(86.6, 178, 0.8)}
   ${rhodo(113.4, 178, 0.8)}
+
+  `}
 
   <!-- resting arm + hand (mirrored for the right arm when walking) -->
   ${restArmG("sagun__swing sagun__swing--l")}
@@ -211,6 +224,15 @@
 
   <!-- head -->
   <g class="sagun__head">
+    ${back ? `
+    <!-- back of the head: all hair, black down to green tips -->
+    <path d="M100 41 C120 41 132 57 132 79 C132 99 119 116 100 118 C81 116 68 99 68 79 C68 57 80 41 100 41Z" fill="var(--skin)"/>
+    <path d="M57 122 C52 108 54 96 55 86 C56 54 76 38 100 38 C124 38 144 54 145 86 C146 96 148 108 143 122
+             C136 126 128 124 120 122 C110 124 90 124 80 122 C72 124 64 126 57 122Z" fill="url(#${id}-hair)"/>
+    <path d="M100 40 C98 70 97 100 96 121 M86 43 C79 70 74 96 72 121 M114 43 C121 70 126 96 128 121 M73 53 C64 76 60 100 60 119 M127 53 C136 76 140 100 140 119"
+          stroke="var(--hair-dark)" stroke-width="1.3" fill="none" opacity=".6" stroke-linecap="round"/>
+    <path d="M78 52 C86 44 96 41 104 41" stroke="#fff" stroke-width="2.4" fill="none" opacity=".18" stroke-linecap="round"/>
+    ` : `
     <!-- slimmer face, tapering to the chin -->
     <path d="M100 41 C120 41 132 57 132 79 C132 99 119 116 100 118 C81 116 68 99 68 79 C68 57 80 41 100 41Z" fill="var(--skin)"/>
 
@@ -240,6 +262,7 @@
     <path d="M86 50 C72 64 64 84 63 100 C62 108 62 114 63 118 M106 50 C124 60 134 80 136 100 C137 108 138 114 137 118"
           stroke="var(--bangs-dark)" stroke-width="1.5" fill="none" opacity=".6"/>
     <path d="M72 66 C76 58 82 52 88 49 M126 70 C121 61 114 55 106 51" stroke="#fff" stroke-width="2.2" fill="none" opacity=".22" stroke-linecap="round"/>
+    `}
   </g>
   </g>
 </svg>`;
@@ -253,18 +276,18 @@
 
   /* A walker holds both poses: it waves when idle and walks while the page
      adds .is-walking (the scene scripts do that while the camera moves). */
-  window.makeWalker = function (el, idle) {
+  window.makeWalker = function (el, idle, walk) {
     el.classList.add("walker");
     el.innerHTML = '<span class="walker__pose walker__pose--wave"></span><span class="walker__pose walker__pose--walk"></span>';
     window.renderSagun(el.children[0], { pose: idle || "wave" });
-    window.renderSagun(el.children[1], { pose: "walk" });
+    window.renderSagun(el.children[1], { pose: walk || "walk" });
     return el;
   };
 
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("[data-sagun]").forEach(function (el) {
       const pose = el.getAttribute("data-sagun") || "wave";
-      if (pose === "walker") window.makeWalker(el, el.getAttribute("data-idle"));
+      if (pose === "walker") window.makeWalker(el, el.getAttribute("data-idle"), el.getAttribute("data-walk"));
       else window.renderSagun(el, { pose: pose });
     });
   });

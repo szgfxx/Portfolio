@@ -106,6 +106,18 @@ window.SAGUN = {
     "Semifinalist, National Math Olympiad",
   ],
 
+  // What Sagun says while hiking ahead of you, one line per stretch of the climb
+  climbTalk: {
+    top: "", // the intro already says it
+    about: "So, hi! I’m Sagun. Biochem and math at Pitzer, and I love a good trail.",
+    experience: "These are the labs I’ve worked in. Lots of Python, lots of tiny worms.",
+    projects: "Base camp! Perfect time to show you some projects.",
+    skills: "It’s getting cold… good thing I packed some skills 🧣",
+    leadership: "I love bringing people together. Even up here.",
+    education: "Pitzer College, class of 2028. We’re almost at the top!",
+    summit: "Phew, that was quite a walk. Thank you for coming along! 🙏",
+  },
+
   education: [
     {
       school: "Pitzer College",

@@ -133,7 +133,7 @@
     // a chiya stall at the trailhead
     add(5, { kind: "tea", off: -(HW + 2.6), s: 1 });
     // doko baskets for rubbish along the trail, but not in the last quarter
-    for (let z = 9; z < TOTAL * 0.75; z += 13) add(z, { kind: "doko", off: (Math.round(z / 13) % 2 ? 1 : -1) * (HW + 0.45), s: 1 });
+    [[14, 1], [62, -1], [118, 1]].forEach(([z, side]) => add(z, { kind: "doko", off: side * (HW + 0.45), s: 1 }));
     const camps = [
       [4130, "Annapurna Base Camp · 4,130 m"],
       [5100, "Camp I · 5,100 m"],
@@ -630,7 +630,7 @@
           ctx.font = `700 ${fs}px Mukta, sans-serif`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.fillText("चिया · Tea", x, by - h + 0.31 * u, w - 0.3 * u);
+          ctx.fillText("चिया पसल", x, by - h + 0.31 * u, w - 0.3 * u);
           ctx.textAlign = "start";
         }
         // bench out front
@@ -847,6 +847,8 @@
       ctx.restore();
     }
 
+    placeHiker(t, reveal);
+
     const alt = Math.round(cur >= 0.9 ? ALT1 : altOf(camZ));
     if (alt !== lastAlt) {
       lastAlt = alt;
@@ -858,6 +860,48 @@
     requestAnimationFrame(frame);
   }
 
+  /* ---------- Sagun hiking ahead of us ---------- */
+  const hiker = document.querySelector(".hiker");
+  const hikerFig = hiker && hiker.querySelector(".hiker__fig");
+  const bubble = hiker && hiker.querySelector(".hiker__bubble");
+  const TALK = (window.SAGUN && window.SAGUN.climbTalk) || {};
+  const AHEAD = 5.5; // metres ahead on the trail
+  let hikerWalking = false, lastCur = 0, said = null;
+  function placeHiker(t, reveal) {
+    if (!hiker) return;
+    let x, feet, s;
+    if (reveal < 0.5) {
+      const pp = proj(camZ + AHEAD);
+      s = pp[2];
+      x = pp[0] + 0.2 * s;
+      feet = Math.max(pp[1], H * 0.6); // stay in the lower part of the screen, even on steep snow
+    } else {
+      // at the top she stops beside the summit pole and takes in the view
+      s = H * 0.3 / 1.65;
+      x = W * 0.3;
+      feet = H * 0.9;
+    }
+    const fh = 1.65 * s * (360 / 344), fw = (fh * 200) / 360;
+    hiker.style.width = fw + "px";
+    hiker.style.height = fh + "px";
+    hiker.style.transform = `translate(${x - fw / 2}px, ${feet - (344 / 360) * fh}px)`;
+    const moving = Math.abs(cur - lastCur) > 0.00003 && reveal < 0.5;
+    lastCur = cur;
+    if (moving !== hikerWalking) {
+      hikerWalking = moving;
+      hikerFig.classList.toggle("is-walking", moving);
+    }
+  }
+  function sayFor(id) {
+    const text = TALK[id] || "";
+    if (text === said) return;
+    said = text;
+    bubble.textContent = text;
+    bubble.classList.remove("is-new");
+    void bubble.offsetWidth;
+    bubble.classList.add("is-new");
+  }
+
   /* ---------- section label + active nav ---------- */
   const sections = Array.from(document.querySelectorAll("[data-alt]"));
   const labelEl = document.getElementById("alt-label");
@@ -867,6 +911,7 @@
     for (const s of sections) if (s.getBoundingClientRect().top < window.innerHeight * 0.55) current = s;
     labelEl.textContent = current ? current.dataset.alt : "Phewa lakeside";
     const id = current && current.id;
+    if (bubble) sayFor(id || "top");
     navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
   }
 

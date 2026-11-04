@@ -30,6 +30,12 @@
     <a class="topbar__alt" href="that-way.html" title="the fun side">that way ↝</a>
   </header>
 
+  <!-- Sagun hiking ahead of you, chatting as you climb; positioned by js/trail.js -->
+  <div class="hiker" aria-hidden="true">
+    <span class="hiker__bubble"></span>
+    <span class="hiker__fig" data-sagun="walker" data-idle="back" data-walk="backwalk"></span>
+  </div>
+
   <aside class="altimeter" aria-hidden="true">
     <div class="altimeter__track"><div class="altimeter__fill"></div><div class="altimeter__dot"></div></div>
     <div class="altimeter__read"><span id="alt-m">822</span> m</div>
@@ -105,7 +111,7 @@
         <h2 class="summit__title">Phew, that was quite a walk.</h2>
         <p class="summit__sub">Thank you for coming along.</p>
         <div class="summit__contact">
-          <h3>Say hi <span lang="ne">सम्पर्क</span></h3>
+          <h3>Want to learn more? Find me here.</h3>
           <div class="intro__links" data-fill="links"></div>
         </div>
         <p class="summit__foot">

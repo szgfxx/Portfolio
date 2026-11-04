@@ -609,3 +609,70 @@ body.trail {
   opacity: 1;
   font-weight: 600;
 }
+
+/* ---------- Sagun hiking ahead, with her speech bubble ---------- */
+.hiker {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  will-change: transform;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+.hiker__fig {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.hiker__bubble {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  width: max-content;
+  max-width: min(300px, 70vw);
+  margin-bottom: 8px;
+  padding: 10px 16px;
+  border-radius: 18px;
+  background: #fff;
+  color: #2a1d14;
+  font-size: 17px;
+  line-height: 1.3;
+  text-align: center;
+  transform: translateX(-50%) rotate(-1.5deg);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+.hiker__bubble::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -9px;
+  border: 9px solid transparent;
+  border-top-color: #fff;
+}
+.hiker__bubble:empty {
+  display: none;
+}
+.hiker__bubble.is-new {
+  animation: hiker-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@keyframes hiker-pop {
+  from { transform: translateX(-50%) scale(0.6) rotate(-5deg); opacity: 0.4; }
+  to { transform: translateX(-50%) rotate(-1.5deg); opacity: 1; }
+}
+@media (max-width: 520px) {
+  .hiker__bubble {
+    font-size: 15px;
+  }
+}
+
+/* intro sits near the top so Sagun has the trail below it */
+.stage--intro {
+  align-items: flex-start;
+  padding-top: max(80px, 11vh);
+}
+.stage--intro .intro__go {
+  margin-top: 2vh;
+}
