@@ -8,7 +8,6 @@
 
   /* ---------- content ---------- */
   const slot = (n) => document.querySelector(`[data-w="${n}"]`);
-  slot("intro").innerHTML = esc(W8.intro || "");
   const YAP = (W8.yap || []).map((y) => (typeof y === "string" ? { text: y } : y));
   slot("yap").innerHTML = YAP.map((y) => `<li>${esc(y.text)}</li>`).join("");
   slot("stats").innerHTML = (W8.stats || [])

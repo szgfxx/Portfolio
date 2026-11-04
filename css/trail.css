@@ -676,3 +676,12 @@ body.trail {
 .stage--intro .intro__go {
   margin-top: 2vh;
 }
+
+/* title: one line, a little higher */
+.stage--intro {
+  padding-top: max(64px, 8vh);
+}
+.stage--intro .intro__name {
+  font-size: clamp(26px, 6.4vw, 64px);
+  white-space: nowrap;
+}
