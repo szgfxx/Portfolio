@@ -339,8 +339,9 @@
     [/…/g, ", "], [/\(([^)]*)\)/g, ", $1, "],
     [/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu, ""],
   ];
+  const VOICE = false; // spoken lines are off; flip to true to bring the voice back
   api.speak = function (text, onStart, onEnd) {
-    if (!synth) return false;
+    if (!VOICE || !synth) return false;
     synth.cancel();
     if (!on || !text) return false;
     let t = text;
