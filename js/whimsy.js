@@ -68,7 +68,21 @@
     if (p < 0) return -1;
     return Math.min(YAP.length, Math.floor(p * YAP.length));
   }
+  const meter = document.querySelector(".momo-meter");
+  const meterFill = document.querySelector(".momo-meter__fill");
+  const meterLabel = document.querySelector(".momo-meter__label");
+  function updateMeter() {
+    const top = walkEl.offsetTop, h = walkEl.offsetHeight;
+    const p = S.clamp((window.scrollY + window.innerHeight * 0.6 - top) / h, 0, 1);
+    const done = p >= 1;
+    const lvl = done ? 1 : 1 - p * 0.95; // she gets hungrier with every step
+    meterFill.style.width = lvl * 100 + "%";
+    meterFill.style.setProperty("--fill", lvl > 0.5 ? "#2f9a4b" : lvl > 0.25 ? "#e3a12a" : "#c2412d");
+    meterLabel.textContent = done ? "🥟 momo meter: full!" : lvl < 0.2 ? "🥟 momo meter: HUNGRY" : "🥟 momo meter";
+    if (done !== meter.classList.contains("is-full")) meter.classList.toggle("is-full", done);
+  }
   function updateYap() {
+    updateMeter();
     const i = lineAt();
     // quiet before the walk starts, gone once she's walked off to the momo stall
     btn.classList.toggle("is-away", i >= YAP.length);
@@ -230,10 +244,15 @@
     // blade sign facing us, so it reads straight on
     const sz = o.z0 + 0.15;
     if (sz > camZ + 0.6) {
-      const a = P(X - 1.5, 3.55, sz), b = P(X - 0.05, 3.0, sz);
-      ctx.fillStyle = tint(o.trim, sz - camZ);
+      const big = o.special;
+      const a = P(X - (big ? 2.9 : 1.5), big ? 3.9 : 3.55, sz), b = P(X - 0.05, 3.0, sz);
+      if (big) {
+        ctx.fillStyle = tint("#e3a526", sz - camZ);
+        ctx.fillRect(a[0] - 0.06 * a[2], a[1] - 0.06 * a[2], b[0] - a[0] + 0.12 * a[2], b[1] - a[1] + 0.12 * a[2]);
+      }
+      ctx.fillStyle = tint(big ? "#b3202a" : o.trim, sz - camZ);
       ctx.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]);
-      const fs = 0.2 * a[2];
+      const fs = (big ? 0.26 : 0.2) * a[2];
       if (fs >= 6) {
         ctx.font = `700 ${fs}px Mukta, sans-serif`;
         ctx.fillStyle = "#fff8ea";
@@ -496,6 +515,19 @@
   function placeBins() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     if (max <= 0) return;
+    // the shop beside her when she says the momo line becomes her restaurant
+    const mi = YAP.findIndex((y) => y.momo);
+    things.forEach((o) => o.kind === "shop" && o.special && ((o.sign = o.orig), (o.special = false)));
+    if (mi >= 0) {
+      const at = walkEl.offsetTop - window.innerHeight * 0.6 + ((mi + 0.5) / YAP.length) * walkEl.offsetHeight;
+      const zEnd = -S.clamp(at / max, 0, 1) * LEN + DS + 5;
+      const shop = things.find((o) => o.kind === "shop" && o.z0 <= zEnd && o.z1 >= zEnd);
+      if (shop) {
+        shop.orig = shop.sign;
+        shop.sign = "Sagun’s Momo Restaurant";
+        shop.special = true;
+      }
+    }
     things.forEach((o) => {
       if (o.kind !== "bin") return;
       const at = walkEl.offsetTop - window.innerHeight * 0.6 + ((o.line + 0.1) / YAP.length) * walkEl.offsetHeight;

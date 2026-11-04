@@ -401,3 +401,75 @@ body.whimsy {
   from { transform: translateX(-50%) scale(0.6) rotate(-6deg); opacity: 0.4; }
   to { transform: translateX(-50%) rotate(-2deg); opacity: 1; }
 }
+
+/* ---------- momo meter: drains as she walks ---------- */
+.momo-meter {
+  position: fixed;
+  z-index: 7;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 14px 12px;
+  border-radius: 16px;
+  background: rgba(255, 248, 234, 0.94);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  font-family: var(--hand);
+  font-size: 20px;
+  line-height: 1;
+}
+.momo-meter__bar {
+  display: block;
+  width: 150px;
+  height: 14px;
+  border-radius: 99px;
+  background: #e9dab8;
+  overflow: hidden;
+}
+.momo-meter__fill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  border-radius: 99px;
+  background: var(--fill, #2f9a4b);
+  transition: width 0.4s ease, background 0.4s;
+}
+.momo-meter.is-full {
+  animation: bubble-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+@media (max-width: 520px) {
+  .momo-meter {
+    left: 12px;
+    bottom: 12px;
+    font-size: 17px;
+  }
+  .momo-meter__bar {
+    width: 110px;
+  }
+}
+
+/* ---------- popups hug the sides so the promenade stays clear ---------- */
+@media (min-width: 900px) {
+  .w-main {
+    max-width: none;
+  }
+  .w-hero {
+    justify-content: flex-start;
+    padding-left: 2vw;
+  }
+  .w-hero__text {
+    max-width: 440px;
+  }
+  .w-section {
+    max-width: 460px;
+    margin-left: 2vw;
+    text-align: left;
+  }
+  .w-section.w-momo {
+    max-width: 340px;
+    margin-left: auto;
+    margin-right: 2vw;
+    text-align: center;
+  }
+}

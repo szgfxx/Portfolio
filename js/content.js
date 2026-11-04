@@ -25,104 +25,85 @@ window.SAGUN = {
   /* ---------------- "THIS WAY" — the professional trail ---------------- */
 
   about: [
-    "I’m a Biochemistry & Mathematics student (minor in Economics) at Pitzer College. My work sits where biology meets computation: I’ve imaged neurons in C. elegans, and now I model hybrid biological–artificial neural networks in Python.",
-    "Before Claremont I did public-health research in Nepal with Incubate Nepal, on tuberculosis treatment and areca-nut toxicology. I love teaching, I speak six languages, and I go looking for problems that need both a pipette and a proof.",
+    "Biochemistry & Mathematics student at Pitzer College, working where biology meets computation: from imaging neurons in C. elegans to modeling hybrid neural networks in Python.",
   ],
 
   experience: [
     {
       role: "Math-Physics Research Assistant",
-      org: "Dept. of Natural Sciences, Pitzer College",
+      org: "Pitzer College",
       when: "Aug 2026 — Present",
-      where: "Claremont, CA",
-      points: [
-        "Investigate context-dependent learning and prediction in Hybrid Adaptive Networks that integrate biological and artificial neural systems, under a DARPA-funded MURI program.",
-        "Build Python simulation pipelines (NumPy, SciPy) to model hybrid neural networks, implement Bayesian belief updates, and test predictive performance against theoretical bounds across network topologies and spectral regimes.",
-      ],
+      where: "",
+      points: ["Modeling hybrid biological–artificial neural networks in Python (DARPA MURI)."],
     },
     {
       role: "Molecular Biology Research Assistant",
-      org: "Dept. of Molecular Biology, Pomona College & Pitzer College",
+      org: "Pomona & Pitzer College",
       when: "May 2025 — Jul 2026",
-      where: "Claremont, CA",
-      points: [
-        "Quantified ACR signaling in C. elegans neurons across 5+ transgenic lines using 3D imaging, microscopy and statistical analysis of behavioral assays.",
-        "Designed and validated experimental constructs, analyzing PCR and electrophoresis data to ensure high-fidelity genetic transformations.",
-        "Co-authored a 2025 paper on nicotinic acetylcholine receptors and SAX-7 in cell migration (PMID 41205974).",
-      ],
+      where: "",
+      points: ["Imaged and quantified neuron signaling in C. elegans; co-authored a 2025 paper."],
     },
     {
       role: "Fellow & Course Assistant",
-      org: "Nesin Mathematics Village",
+      org: "Nesin Mathematics Village, Turkey",
       when: "Aug 2026",
-      where: "Şirince, Turkey",
-      points: [
-        "Selected for an intensive mathematics fellowship; TA for an advanced Introduction to Morse Theory course, leading problem-solving sessions.",
-        "Completed upper-undergraduate and graduate-level coursework in Computational Algebraic Geometry, Game Theory, and Probability & Statistics.",
-      ],
+      where: "",
+      points: ["TA for an advanced Morse Theory course."],
     },
     {
       role: "Peer Mentor & Student Researcher",
       org: "Incubate Nepal",
-      when: "Aug 2023 — 2024",
-      where: "Nepal",
-      points: [
-        "END TB (DOTS Nepal): led epidemiological data collection and statistical modeling alongside Harvard scholars to evaluate tuberculosis treatment in remote Nepal.",
-        "SUPARI: mentored students in organizing data and literature reviews on carcinogenic compounds in areca nuts.",
-        "Tutored secondary-school students in physics, chemistry, biology and math.",
-      ],
+      when: "2023 — 2024",
+      where: "",
+      points: ["Tuberculosis and areca-nut public-health research in Nepal."],
     },
   ],
 
   projects: [
     {
-      name: "SAX-7 & cell migration paper",
-      blurb: "Co-author of “Nicotinic acetylcholine receptors function with adhesion molecule SAX-7 to reverse cell orientation during migration” (2025).",
-      tags: ["C. elegans", "neurobiology", "publication"],
+      name: "SAX-7 & cell migration",
+      blurb: "Co-authored paper, 2025.",
+      tags: ["C. elegans", "publication"],
       link: "https://pubmed.ncbi.nlm.nih.gov/41205974/",
     },
     {
       name: "Hybrid Adaptive Networks",
-      blurb: "Simulating networks that mix biological and artificial neurons, and how well they predict with Bayesian belief updates. DARPA MURI.",
-      tags: ["Python", "NumPy", "SciPy", "ML"],
+      blurb: "Simulating mixed biological–artificial neural networks.",
+      tags: ["Python", "ML"],
       link: "",
     },
     {
-      name: "END TB · DOTS Nepal",
-      blurb: "Epidemiological data collection and statistical modeling to evaluate tuberculosis treatment initiatives in remote Nepal.",
-      tags: ["epidemiology", "statistics", "public health"],
+      name: "END TB · Nepal",
+      blurb: "Epidemiology and statistics for TB treatment in remote Nepal.",
+      tags: ["public health"],
       link: "",
     },
     {
       name: "CENEU Medical Spanish",
-      blurb: "Studied community health infrastructure in Mexico, shadowed physicians, and built medical Spanish for cross-cultural care.",
-      tags: ["global health", "Spanish"],
+      blurb: "Community health and clinical shadowing in Mexico.",
+      tags: ["global health"],
       link: "",
     },
   ],
 
   skills: [
-    { group: "Technical", items: ["Python", "NumPy", "SciPy", "pandas", "LLM APIs", "R (ggplot2)", "C++"] },
-    { group: "Laboratory", items: ["PCR", "Electrophoresis", "Microscopy (Leica Thunder)", "3D imaging", "Cloning", "Molecular biology"] },
-    { group: "Languages", items: ["Nepali", "English", "Urdu/Hindi", "Korean", "Spanish", "Mandarin (elementary)"] },
+    { group: "Technical", items: ["Python", "NumPy", "SciPy", "pandas", "R", "C++"] },
+    { group: "Lab", items: ["PCR", "Microscopy", "3D imaging", "Cloning"] },
+    { group: "Languages", items: ["Nepali", "English", "Hindi/Urdu", "Korean", "Spanish", "Mandarin"] },
   ],
 
   leadership: [
-    "Diversity Committee Student Representative, Pitzer Student Senate",
-    "Social Committee Co-Head, Pasifika Asian Student Union (PASU)",
-    "Trip Facilitator, People of Color Outside",
+    "Pitzer Student Senate, Diversity Committee",
+    "Co-Head, Pasifika Asian Student Union",
     "Treasurer, Womxn of Color Collective",
-    "Junior Year Representative, Pitzer International Students Association",
-    "Taught debate and public speaking to 150+ first-generation, low-income students (Public Debate Program)",
-    "Course Assistant for Linear Algebra · General Math Tutor",
-    "Conference Assistant & Residence Life Office Assistant",
+    "Debate coach for 150+ first-gen students",
+    "Linear Algebra Course Assistant",
   ],
 
   honors: [
     "Flora Sanborn Pitzer Scholarship (2026)",
-    "Bronze Medalist, Nepal Chemistry Olympiad (2023)",
-    "Semifinalist, National Mathematics Olympiad (2022, 2023)",
-    "Principal’s Merit Award (2018–2022)",
+    "Bronze, Nepal Chemistry Olympiad (2023)",
+    "Semifinalist, National Math Olympiad",
   ],
 
   education: [
@@ -130,7 +111,7 @@ window.SAGUN = {
       school: "Pitzer College",
       degree: "B.A. Biochemistry & Mathematics, Minor in Economics",
       when: "Aug 2024 — May 2028",
-      notes: "Coursework: Real Analysis, Machine Learning, Differential Equations, Discrete Mathematics, Linear Algebra, Numerical Methods, Statistics, Biochemistry, Cell Biology, Organic Chemistry.",
+      notes: "Real Analysis, Machine Learning, Linear Algebra, Biochemistry.",
     },
   ],
 
@@ -138,7 +119,7 @@ window.SAGUN = {
 
   whimsy: {
     intro:
-      "You took the scenic route. Good choice. This is where the non-serious stuff lives.",
+      "This is the fun stuff. If you were here for a serious talk, please go the other way.",
 
     // Click Sagun on the lakeside page to cycle through these
     funFacts: [
@@ -151,7 +132,8 @@ window.SAGUN = {
 
     // What Sagun says while walking the lakeside — one bubble per stretch of
     // scrolling, in this order. { bin: true } lines pop up as she passes a
-    // trash can. Add, remove or reorder freely.
+    // trash can, and the { momo: true } line is said outside her momo
+    // restaurant. Add, remove or reorder freely.
     yap: [
       "hiii. ok walk with me, just keep scrolling →",
       "so this is Lakeside, Pokhara. shops on that side, Phewa on this side. best walk in the world, no notes.",
@@ -166,7 +148,7 @@ window.SAGUN = {
       { bin: true, text: "another bin!! ok I’m not obsessed with bins. Pokhara just deserves a clean lake." },
       "TODO another hobby",
       "TODO a weird fun fact about you",
-      "anyway. I’ve been yapping this whole walk and now I’m hungry. momo time? 🥟",
+      { momo: true, text: "Ah… I’m tired. I’m gonna have some momo now. Thanks for walking with me 🥟" },
     ],
 
     // Silly character stats (0–100). Rename/re-score freely.

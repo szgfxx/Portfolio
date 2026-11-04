@@ -545,3 +545,67 @@ body.trail {
   margin-top: 16px !important;
   font-size: 18px !important;
 }
+
+/* ---------- keep the trail clear: cards hug the sides ---------- */
+.intro__go {
+  margin: 7vh 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(24px, 3.4vw, 38px);
+  line-height: 1.15;
+}
+.intro__go + .intro__scroll {
+  margin-top: 2vh;
+}
+@media (min-width: 900px) {
+  .stage {
+    max-width: none;
+  }
+  .lokta {
+    max-width: 400px;
+  }
+  .lokta--left {
+    margin-left: 2vw;
+  }
+  .lokta--right {
+    margin-right: max(96px, 7vw); /* clear of the altimeter */
+  }
+  .section-sign {
+    margin-left: 2vw;
+  }
+  .projects {
+    display: flex;
+    flex-direction: column;
+    gap: 12vh;
+    max-width: none;
+  }
+  .stone {
+    width: 340px;
+  }
+  .stone:nth-child(odd) {
+    margin-right: auto;
+    margin-left: 2vw;
+  }
+  .stone:nth-child(even) {
+    margin-left: auto;
+    margin-right: max(96px, 7vw);
+  }
+  .summit {
+    max-width: 520px;
+  }
+}
+
+/* intro: dark ink with a pale halo so it reads over sky and meadow */
+.stage--intro .intro {
+  color: #16121a;
+  text-shadow: 0 0 24px rgba(248, 244, 236, 0.95), 0 0 6px rgba(248, 244, 236, 0.85);
+}
+.stage--intro .intro__name {
+  font-size: clamp(44px, 8vw, 96px);
+}
+.stage--intro .intro__go {
+  color: #9c1c26;
+}
+.stage--intro .intro__scroll {
+  opacity: 1;
+  font-weight: 600;
+}

@@ -21,13 +21,13 @@
   const GSTEP = 0.1;
   const gTab = new Float32Array(Math.ceil((TOTAL + VIEW * SEG + 20) / GSTEP) + 2);
   const slopeAt = (z) =>
-    0.08 * S.smooth(7, 16, z) +
-    0.1 * S.smooth(30, 48, z) +
-    0.12 * S.smooth(95, 115, z) +
-    0.05 * S.smooth(140, 155, z) -
+    0.08 * S.smooth(1, 5, z) + // a short meadow, then up
+    0.08 * S.smooth(22, 38, z) +
+    0.22 * S.smooth(78, 96, z) + // steep snow
+    0.14 * S.smooth(118, 134, z) -
     0.34 * S.smooth(186, 199, z) - // summit ridge flattens out
     0.5 * S.smooth(200.5, 204, z) + // and falls away beyond the top
-    (0.04 * Math.sin(z * 0.35) + 0.025 * Math.sin(z * 0.9 + 1)) * S.smooth(10, 28, z) * (1 - S.smooth(185, 198, z));
+    (0.04 * Math.sin(z * 0.35) + 0.025 * Math.sin(z * 0.9 + 1)) * S.smooth(3, 18, z) * (1 - S.smooth(185, 198, z));
   (function () {
     let h = 0;
     for (let i = 0; i < gTab.length; i++) {
@@ -53,11 +53,12 @@
     const a = Math.abs(off);
     const d = Math.max(0, a - HW * 1.6);
     if (d === 0) return 0;
-    const valley = S.smooth(16, 45, z) * (1 - S.smooth(135, 165, z));
+    const valley = S.smooth(5, 30, z) * (1 - S.smooth(135, 165, z));
     const ridge = S.smooth(150, 178, z);
     const bumps = 0.35 * Math.sin(off * 0.35 + z * 0.08) + 0.2 * Math.sin(off * 0.9 - z * 0.13);
     return (valley * 0.11 + (1 - valley - ridge) * 0.025 - ridge * 0.22) * Math.pow(d, 1.25) + bumps * S.smooth(2, 9, a) * (0.2 + valley * 0.8);
   };
+  const SF = new Float32Array(20), SN = new Float32Array(20);
   const OFFS = [-60, -36, -24, -17, -12, -8.5, -6, -4, -2.6, -1.85, 1.85, 2.6, 4, 6, 8.5, 12, 17, 24, 36, 60];
 
   // the trail winds side to side as it climbs
@@ -79,7 +80,7 @@
   };
 
   function groundColor(alt, k) {
-    const a = S.smooth(1000, 2400, alt); // meadow → dry grass
+    const a = S.smooth(900, 2200, alt); // meadow → dry grass
     const b = S.smooth(3000, 3900, alt); // → rock / moraine
     const c = S.smooth(SNOW_ALT - 250, SNOW_ALT + 250, alt + (S.hash(k * 0.37) - 0.5) * 400); // → snow
     let col = S.mix(k % 2 ? C.meadow : C.meadow2, C.dry, a);
@@ -106,7 +107,7 @@
     for (let k = 1; k < NK; k++) {
       const z = k * SEG;
       const alt = altOf(z);
-      const meadow = 1 - S.smooth(950, 1300, alt);
+      const meadow = 1 - S.smooth(840, 960, alt);
       const grassy = 1 - S.smooth(3400, 4100, alt);
       const snowy = S.smooth(SNOW_ALT, SNOW_ALT + 300, alt);
       // dandelions, little yellow weed flowers and seed puffs in the meadow
@@ -128,7 +129,11 @@
         patches[k].push({ o1: Math.min(o1, o1 + w), o2: Math.max(o1, o1 + w) });
       }
     }
-    add(4, { kind: "sign", off: HW + 0.6, text: "Annapurna I ↑  8,091 m" });
+    add(3, { kind: "sign", off: HW + 0.6, text: "Annapurna I ↑  8,091 m" });
+    // a chiya stall at the trailhead
+    add(5, { kind: "tea", off: -(HW + 2.6), s: 1 });
+    // doko baskets for rubbish along the trail, but not in the last quarter
+    for (let z = 9; z < TOTAL * 0.75; z += 13) add(z, { kind: "doko", off: (Math.round(z / 13) % 2 ? 1 : -1) * (HW + 0.45), s: 1 });
     const camps = [
       [4130, "Annapurna Base Camp · 4,130 m"],
       [5100, "Camp I · 5,100 m"],
@@ -144,7 +149,7 @@
         add(z + 0.6 + j * 0.9, { kind: "tent", off: (j % 2 ? 1 : -1) * (HW + 1.6 + j * 0.7), s: 1, col: cols[(i + j) % 4] });
       }
     });
-    add(6, { kind: "flagline", off: 0, s: 1 });
+    add(4.5, { kind: "flagline", off: 0, s: 1 });
     for (let z = 60; z < TOTAL - 4; z += 9 + (z % 7)) add(z, { kind: "cairn", off: (z % 2 ? 1 : -1) * (HW + 0.5), s: 1 });
     add(TOTAL, { kind: "summit", off: 0, s: 1 });
   })();
@@ -248,14 +253,16 @@
     // the rest of the range off to the sides (Machhapuchhre peeks in on the right)
     const near = S.smooth(0, 0.8, p);
     const mw = Math.max(W * 1.6, H * 1.8) * (1 + near * 0.5);
-    const baseY = Math.min(farY + H * 0.02, H);
+    // on steep ground the far slope can sit way above the screen; keep the backdrop sane
+    const baseY = S.clamp(farY + H * 0.02, H * 0.18, H);
     S.himalaya(ctx, W * 0.75 - mw * 0.5 - camX * 2, mw, baseY, H * (0.16 + near * 0.12), {
       haze: S.rgb(haze, 0.95),
       base: "#b9c7d8",
     });
     // Annapurna I, straight ahead, growing as we approach, gone once we're on it
     const fade = 1 - S.smooth(0.62, 0.78, p);
-    if (fade > 0.01) annapurna(W / 2 - camX * 3, baseY, Math.min(baseY - H * 0.06, H * (0.5 + near * 0.3)), fade);
+    const mh = Math.min(baseY - H * 0.06, H * (0.5 + near * 0.3));
+    if (fade > 0.01 && mh > H * 0.05) annapurna(W / 2 - camX * 3, baseY, mh, fade);
 
     // a sea of cloud forming below as we climb
     if (a > 0.35) {
@@ -526,6 +533,113 @@
         }
         break;
       }
+      case "doko": {
+        // conical bamboo doko used as a bin, with a little "फोहोर" tag
+        const h = 0.75 * u, wt = 0.42 * u, wb = 0.2 * u;
+        if (h < 3) break;
+        ctx.fillStyle = "#a9793f";
+        ctx.beginPath();
+        ctx.moveTo(x - wt, by - h);
+        ctx.lineTo(x + wt, by - h);
+        ctx.lineTo(x + wb, by);
+        ctx.lineTo(x - wb, by);
+        ctx.fill();
+        ctx.fillStyle = "#c79a5a";
+        ctx.beginPath();
+        ctx.ellipse(x, by - h, wt, wt * 0.22, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#3a2a1a";
+        ctx.beginPath();
+        ctx.ellipse(x, by - h, wt * 0.85, wt * 0.15, 0, 0, Math.PI * 2);
+        ctx.fill();
+        if (h > 14) {
+          // the weave
+          ctx.strokeStyle = "rgba(70,45,20,.55)";
+          ctx.lineWidth = Math.max(1, 0.02 * u);
+          ctx.beginPath();
+          for (let i = 1; i < 6; i++) {
+            const yy = by - h + (h * i) / 6, w = S.lerp(wt, wb, i / 6);
+            ctx.moveTo(x - w, yy);
+            ctx.lineTo(x + w, yy);
+          }
+          for (let i = -3; i <= 3; i++) {
+            ctx.moveTo(x + (wt * i) / 3.5, by - h);
+            ctx.lineTo(x + (wb * i) / 3.5, by);
+          }
+          ctx.stroke();
+          ctx.fillStyle = "#2f8a3e";
+          ctx.fillRect(x - 0.17 * u, by - h * 0.62, 0.34 * u, 0.14 * u);
+          const fs = 0.09 * u;
+          if (fs >= 6) {
+            ctx.fillStyle = "#fff";
+            ctx.font = `700 ${fs}px Mukta, sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("फोहोर", x, by - h * 0.62 + 0.07 * u);
+            ctx.textAlign = "start";
+          }
+        }
+        break;
+      }
+      case "tea": {
+        // a little chiya pasal: tin roof, counter, kettle, bench
+        const w = 1.6 * u, h = 2.1 * u;
+        if (w < 4) break;
+        ctx.fillStyle = "#c9b48a";
+        ctx.fillRect(x - w / 2, by - h, w, h);
+        ctx.fillStyle = "#7f5a3a";
+        ctx.fillRect(x - w / 2 + 0.12 * u, by - h + 0.55 * u, w - 0.24 * u, 0.75 * u);
+        ctx.fillStyle = "#3a2a20";
+        ctx.fillRect(x - w / 2 + 0.2 * u, by - h + 0.62 * u, w - 0.4 * u, 0.55 * u);
+        ctx.fillStyle = "#8b3a2a";
+        ctx.beginPath();
+        ctx.moveTo(x - w / 2 - 0.25 * u, by - h + 0.05 * u);
+        ctx.lineTo(x, by - h - 0.45 * u);
+        ctx.lineTo(x + w / 2 + 0.25 * u, by - h + 0.05 * u);
+        ctx.fill();
+        ctx.fillStyle = "#a9a39a";
+        ctx.fillRect(x - w / 2 - 0.25 * u, by - h, w + 0.5 * u, 0.1 * u);
+        // counter + kettle + glasses
+        ctx.fillStyle = "#6b4a2e";
+        ctx.fillRect(x - w / 2 - 0.05 * u, by - h + 1.3 * u, w + 0.1 * u, 0.15 * u);
+        ctx.fillStyle = "#9aa3a8";
+        ctx.beginPath();
+        ctx.ellipse(x - 0.35 * u, by - h + 1.18 * u, 0.16 * u, 0.13 * u, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#e9d7b0";
+        [0.05, 0.25, 0.45].forEach((dx) => ctx.fillRect(x + dx * u, by - h + 1.12 * u, 0.09 * u, 0.18 * u));
+        // steam
+        if (!reduce && w > 30) {
+          ctx.strokeStyle = "rgba(255,255,255,.7)";
+          ctx.lineWidth = Math.max(1, 0.03 * u);
+          ctx.beginPath();
+          for (let i = 0; i < 2; i++) {
+            const k = (t * 0.6 + i * 0.5) % 1;
+            const sx2 = x - 0.35 * u + Math.sin(k * 6 + i) * 0.05 * u, sy2 = by - h + 1.0 * u - k * 0.5 * u;
+            ctx.moveTo(sx2, sy2);
+            ctx.lineTo(sx2 + 0.04 * u, sy2 - 0.12 * u);
+          }
+          ctx.stroke();
+        }
+        // sign
+        ctx.fillStyle = "#c4281c";
+        ctx.fillRect(x - w / 2 + 0.1 * u, by - h + 0.12 * u, w - 0.2 * u, 0.36 * u);
+        const fs = 0.24 * u;
+        if (fs >= 7) {
+          ctx.fillStyle = "#fff3dc";
+          ctx.font = `700 ${fs}px Mukta, sans-serif`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("चिया · Tea", x, by - h + 0.31 * u, w - 0.3 * u);
+          ctx.textAlign = "start";
+        }
+        // bench out front
+        ctx.fillStyle = "#6b4a2e";
+        ctx.fillRect(x + w / 2 + 0.15 * u, by - 0.45 * u, 1.0 * u, 0.1 * u);
+        ctx.fillRect(x + w / 2 + 0.22 * u, by - 0.45 * u, 0.08 * u, 0.45 * u);
+        ctx.fillRect(x + w / 2 + 1.0 * u, by - 0.45 * u, 0.08 * u, 0.45 * u);
+        break;
+      }
       case "summit": {
         const ph = 3 * u;
         if (ph < 3) break;
@@ -555,17 +669,26 @@
       if (yn > yf - 0.5 && yf - 12 * pf[2] < H) {
         const alt = altOf(zf);
         const fog = fogAt(pf[3]);
+        // build the slice outline; skip it entirely if it sits above the screen
+        let lowest = -Infinity;
+        for (let i = 0; i < OFFS.length; i++) {
+          const o = OFFS[i];
+          SF[i] = yf - lat(zf, o) * pf[2] - 0.5;
+          SN[i] = Math.min(yn, pn[1]) - lat(zn, o) * pn[2] + 0.5;
+          if (SN[i] > lowest) lowest = SN[i];
+        }
+        if (lowest < 0) {
+          const L0 = sprites[k];
+          for (let i = 0; i < L0.length; i++) drawSprite(L0[i], t);
+          continue;
+        }
         ctx.fillStyle = S.rgb(S.mix(groundColor(alt, k), haze, fog));
         ctx.beginPath();
         for (let i = 0; i < OFFS.length; i++) {
-          const o = OFFS[i];
-          const px = pf[0] + o * pf[2], py = yf - lat(zf, o) * pf[2] - 0.5;
-          i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+          const px = pf[0] + OFFS[i] * pf[2];
+          i ? ctx.lineTo(px, SF[i]) : ctx.moveTo(px, SF[i]);
         }
-        for (let i = OFFS.length - 1; i >= 0; i--) {
-          const o = OFFS[i];
-          ctx.lineTo(pn[0] + o * pn[2], Math.min(yn, pn[1]) - lat(zn, o) * pn[2] + 0.5);
-        }
+        for (let i = OFFS.length - 1; i >= 0; i--) ctx.lineTo(pn[0] + OFFS[i] * pn[2], SN[i]);
         ctx.closePath();
         ctx.fill();
         const pl = patches[k];
@@ -700,7 +823,7 @@
     if (Math.abs(target - cur) < 0.0001) cur = target;
 
     const p = S.clamp(cur / 0.9, 0, 1);
-    camZ = p * (TOTAL - 4);
+    camZ = p * (TOTAL - 9);
     const step = reduce ? 0 : Math.sin(camZ * Math.PI * 1.6) * 0.03; // footstep bob
     camY = g(camZ) + EYE + step;
     camX = (bend(camZ + 1) + bend(camZ + 7)) / 2;
@@ -711,7 +834,7 @@
       const k0 = Math.floor(camZ / SEG) + 1;
       const kMax = Math.min(k0 + VIEW, NK - 1);
       let farY = H;
-      for (let k = kMax; k >= k0; k -= 3) { const pp = proj(k * SEG); farY = Math.min(farY, pp[1] - Math.max(0, lat(k * SEG, 12)) * pp[2]); }
+      for (let k = kMax; k >= k0; k -= 3) farY = Math.min(farY, proj(k * SEG)[1]); // where the trail meets the sky
       background(t, p, farY);
       drawGround(t, k0, kMax);
       const a = altOf(camZ);
