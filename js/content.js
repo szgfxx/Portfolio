@@ -115,7 +115,7 @@ window.SAGUN = {
     skills: "It’s getting cold… good thing I packed some skills 🧣",
     leadership: "I love bringing people together. Even up here.",
     education: "Pitzer College, class of 2028. We’re almost at the top!",
-    summit: "Phew, that was quite a walk. Thank you for coming along! 🙏",
+    summit: "", // the summit card already says it
   },
 
   education: [
