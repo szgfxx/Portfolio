@@ -860,11 +860,13 @@
     requestAnimationFrame(frame);
   }
 
+  window.SagunAudio.scene("mountain");
+
   /* ---------- Sagun hiking ahead of us ---------- */
   const hiker = document.querySelector(".hiker");
   const hikerFig = hiker && hiker.querySelector(".hiker__fig");
   const bubble = hiker && hiker.querySelector(".hiker__bubble");
-  const TALK = (window.SAGUN && window.SAGUN.climbTalk) || {};
+  const TALK = (window.SAGUN && window.SAGUN.climbTalk) || [];
   const AHEAD = 5.5; // metres ahead on the trail
   let hikerWalking = false, lastCur = 0, said = null;
   function placeHiker(t, reveal) {
@@ -890,16 +892,28 @@
     if (moving !== hikerWalking) {
       hikerWalking = moving;
       hikerFig.classList.toggle("is-walking", moving);
+      window.SagunAudio.setWalking(moving);
     }
+    // what she's saying follows how far up we are
+    const prog = S.clamp(cur / 0.9, 0, 1);
+    const n = TALK.length;
+    sayLine(reveal >= 0.5 || prog < 0.015 || !n ? "" : TALK[Math.min(n - 1, Math.floor(((prog - 0.015) / 0.985) * n))]);
+    // the soundscape follows the climb: birds and drums fade, wind rises, snow crunches
+    const a = altOf(camZ + AHEAD);
+    const A = window.SagunAudio;
+    A.surface = a > SNOW_ALT ? "snow" : a > 2600 ? "stone" : "grass";
+    A.set("birds", 1 - S.smooth(2400, 4200, a));
+    A.set("wind", 0.15 + 0.85 * S.smooth(3000, 7000, a));
+    A.set("drums", 1 - S.smooth(4500, 6500, a));
   }
-  function sayFor(id) {
-    const text = TALK[id] || "";
+  function sayLine(text) {
     if (text === said) return;
     said = text;
     bubble.textContent = text;
     bubble.classList.remove("is-new");
     void bubble.offsetWidth;
     bubble.classList.add("is-new");
+    if (text) window.SagunAudio.pop();
   }
 
   /* ---------- section label + active nav ---------- */
@@ -911,7 +925,6 @@
     for (const s of sections) if (s.getBoundingClientRect().top < window.innerHeight * 0.55) current = s;
     labelEl.textContent = current ? current.dataset.alt : "Phewa lakeside";
     const id = current && current.id;
-    if (bubble) sayFor(id || "top");
     navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
   }
 

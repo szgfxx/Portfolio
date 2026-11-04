@@ -106,17 +106,21 @@ window.SAGUN = {
     "Semifinalist, National Math Olympiad",
   ],
 
-  // What Sagun says while hiking ahead of you, one line per stretch of the climb
-  climbTalk: {
-    top: "", // the intro already says it
-    about: "So, hi! I’m Sagun. Biochem and math at Pitzer, and I love a good trail.",
-    experience: "These are the labs I’ve worked in. Lots of Python, lots of tiny worms.",
-    projects: "Base camp! Perfect time to show you some projects.",
-    skills: "It’s getting cold… good thing I packed some skills 🧣",
-    leadership: "I love bringing people together. Even up here.",
-    education: "Pitzer College, class of 2028. We’re almost at the top!",
-    summit: "", // the summit card already says it
-  },
+  // What Sagun says while hiking ahead of you, in order, spread over the climb
+  climbTalk: [
+    "Let’s chat! So… I’m a junior at Pitzer College, in Claremont, California.",
+    "I’m majoring in Biochemistry AND Mathematics, with a minor in Economics. yes, all three.",
+    "On campus, I’m on the Student Senate’s Diversity Committee, and I co-head socials for the Pasifika Asian Student Union.",
+    "I’m also treasurer of the Womxn of Color Collective, and a course assistant for Linear Algebra.",
+    "Research-wise, I started in a molecular biology lab, imaging neurons in tiny worms (C. elegans). we even published a paper!",
+    "Now I’m in a math-physics lab, building Python models of networks that mix real and artificial neurons.",
+    "This summer I was a math fellow in Şirince, Turkey, helping teach a Morse theory course.",
+    "Outside school, most of my heart is in Nepal. I did public-health research there, on TB and areca nut.",
+    "…and I help high school students back home who are figuring out higher education.",
+    "It’s getting cold… good thing I packed some skills 🧣 Python, R, a bit of C++.",
+    "Lab skills too: PCR, microscopy, cloning. And languages: Nepali, English, Hindi/Urdu, Korean, Spanish…",
+    "Almost there… one last push! 🏔️",
+  ],
 
   education: [
     {
@@ -154,13 +158,14 @@ window.SAGUN = {
       { bin: true, text: "ooh a bin! green is कुहिने (compost), blue is नकुहिने (everything else). keep Phewa clean pls 🌊" },
       "I’m always taking pictures. sunsets, friends, everything 📸",
       "I can say hi in 7 languages, and hold a conversation in 5.",
+      "Hello! नमस्ते 🙏 你好 (nǐ hǎo)! ¡Hola! …you get the idea.",
       "I love being out and about: camping, hiking, trekking. you’ve seen the mountain page 🏔️",
       "I also experiment with my hair every now and then. green tips today, who knows tomorrow.",
       "I’ve spent SO many hours staring at tiny worms (C. elegans) under a microscope. they’re kinda cute, honestly.",
       { bin: true, text: "another bin!! ok I’m not obsessed with bins. Pokhara just deserves a clean lake." },
       "right now I’m learning to code… by building this website. hi, you’re looking at my homework 💻",
       "I like writing math proofs that make no sense.",
-      "I’m a big education and feminism advocate, and I’ve done a lot of work on both back in Nepal.",
+      "I care a lot about who gets a seat in the classroom, especially girls. back home in Nepal, a lot of my time went there.",
       "I love helping high school students who are looking into higher education. ask me anything!",
       "big fan of Discord and Duolingo. the owl and I are close 🦉",
       "I feel the need to talk about a lot of things… can you tell? 😅",

@@ -47,18 +47,8 @@
     void bubble.offsetWidth;
     bubble.classList.add("is-new");
     bubble.classList.toggle("todo", /^\s*TODO/i.test(text));
-    if (reduce) {
-      bubble.textContent = text;
-      return;
-    }
-    // type it out, like she's actually saying it
-    let i = 0;
-    bubble.textContent = "";
-    typer = setInterval(() => {
-      i += 2;
-      bubble.textContent = text.slice(0, i);
-      if (i >= text.length) clearInterval(typer);
-    }, 22);
+    bubble.textContent = text;
+    window.SagunAudio.pop();
   }
   // which line belongs to the current stretch of the walk
   function lineAt() {
@@ -143,6 +133,8 @@
      We look back along the stone promenade: Phewa on the left, shops on the
      right, Sagun walking toward us. Scrolling walks her (and us) forward, so
      the lakeside slides away behind her. Units are metres-ish; y is up. */
+  window.SagunAudio.scene("lake");
+  window.SagunAudio.surface = "stone";
   const cvs = document.getElementById("lake-scene");
   const ctx = cvs.getContext("2d");
   const EYE = 1.6, LEN = 150;
@@ -508,6 +500,7 @@
     if (walkerFig && moving !== walking) {
       walking = moving;
       walkerFig.classList.toggle("is-walking", moving);
+      window.SagunAudio.setWalking(moving);
     }
   }
 

@@ -201,3 +201,33 @@ svg {
   outline: 3px solid var(--gold);
   outline-offset: 3px;
 }
+
+/* sound on/off */
+.sound-toggle {
+  position: fixed;
+  z-index: 12;
+  right: 16px;
+  bottom: 16px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 99px;
+  font: 600 14px var(--font-body);
+  color: var(--ink);
+  background: rgba(255, 248, 234, 0.92);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+.sound-toggle[aria-pressed="false"] {
+  animation: sound-nudge 2.4s 2s ease-in-out 3;
+}
+@keyframes sound-nudge {
+  0%, 100% { transform: none; }
+  10% { transform: rotate(-6deg) scale(1.06); }
+  20% { transform: rotate(5deg) scale(1.06); }
+  30% { transform: none; }
+}
+/* on the climb the altimeter owns the bottom-right on phones */
+body.trail .sound-toggle {
+  left: 16px;
+  right: auto;
+}
