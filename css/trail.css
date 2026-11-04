@@ -1,5 +1,5 @@
 body.trail {
-  background: #13301f;
+  background: #4f86b8;
   color: var(--ink);
 }
 
@@ -133,8 +133,9 @@ body.trail {
 /* ---------- stages ---------- */
 #trail-content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
+
 .stage {
   position: relative;
   min-height: 120vh;
@@ -539,4 +540,8 @@ body.trail {
     left: 12px;
     bottom: 2vh;
   }
+}
+.honors__title {
+  margin-top: 16px !important;
+  font-size: 18px !important;
 }

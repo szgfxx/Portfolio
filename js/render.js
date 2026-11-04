@@ -57,6 +57,13 @@
       </div>`
         )
         .join(""),
+    leadership: () => {
+      const L = C.leadership || [], Hn = C.honors || [];
+      return (
+        (L.length ? `<ul>${L.map((x) => `<li${todoCls(x)}>${esc(x)}</li>`).join("")}</ul>` : "") +
+        (Hn.length ? `<h3 class="honors__title">Honors</h3><ul>${Hn.map((x) => `<li${todoCls(x)}>${esc(x)}</li>`).join("")}</ul>` : "")
+      );
+    },
     education: () =>
       (C.education || [])
         .map(

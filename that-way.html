@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sagun, Unserious</title>
-  <meta name="description" content="The scenic route: Sagun's hobbies, random facts, and general nonsense by Phewa lake." />
+  <meta name="description" content="The scenic route: Sagun's hobbies, random facts, and general nonsense on a walk along Phewa lakeside." />
   <meta name="theme-color" content="#4aa3c4" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,35 +21,30 @@
     <a href="this-way.html">serious side →</a>
   </header>
 
+  <button class="w-sagun" type="button" aria-label="Poke Sagun for a random fun fact">
+    <span class="w-bubble" aria-hidden="true">psst. scroll and walk with me</span>
+    <span class="w-sagun__fig" data-sagun="walker" data-idle="stand"></span>
+  </button>
+
   <main class="w-main">
     <section class="w-hero">
       <div class="w-hero__text">
         <p class="w-kicker">the scenic route · lakeside, Pokhara</p>
         <h1>Hi, it’s <span>unserious</span> Sagun.</h1>
         <p class="w-intro" data-w="intro"></p>
-        <p class="w-hint">(poke her)</p>
+        <p class="w-hint">(that’s me down there. scroll to walk with me ↓)</p>
       </div>
-      <button class="w-sagun" type="button" aria-label="Poke Sagun for a random fun fact">
-        <span class="w-bubble" role="status" aria-live="polite">psst. click me.</span>
-        <span class="w-sagun__fig" data-sagun="wave"></span>
-      </button>
     </section>
 
-    <section class="w-section">
-      <h2>Things I do instead of sleeping</h2>
-      <div class="w-line" aria-hidden="true"></div>
-      <div class="polaroids" data-w="hobbies"></div>
+    <!-- the walk: Sagun yaps as you scroll through this stretch -->
+    <section class="w-walk" aria-label="Things Sagun says on the walk">
+      <ol class="visually-hidden" data-w="yap"></ol>
     </section>
 
     <section class="w-section">
       <h2>Character stats</h2>
       <p class="w-note">self-reported. not peer reviewed.</p>
       <div class="stats" data-w="stats"></div>
-    </section>
-
-    <section class="w-section">
-      <h2>Currently floating in my head</h2>
-      <div class="boats" data-w="obsessions"></div>
     </section>
 
     <section class="w-section w-momo">

@@ -298,3 +298,43 @@ body.go-that .hello__ui {
   .sign--right:hover, .sign--right:focus-visible { transform: translateX(8%) rotate(-1deg); }
   .sign--left:hover, .sign--left:focus-visible { transform: translateX(-8%) rotate(0deg); }
 }
+
+/* ---------- one-click résumé ---------- */
+.resume-btn {
+  position: fixed;
+  z-index: 4;
+  right: 16px;
+  bottom: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px 9px 13px;
+  border-radius: 99px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1;
+  color: #fff3dc;
+  text-decoration: none;
+  background: linear-gradient(180deg, #c2412d, #8f1f22);
+  border: 2px solid #f1d29a;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+  animation: rise-in 0.9s 0.8s both;
+}
+.resume-btn:hover,
+.resume-btn:focus-visible {
+  transform: translateY(-3px) rotate(-2deg);
+}
+body.go-this .resume-btn,
+body.go-that .resume-btn {
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+@media (max-width: 520px) {
+  .resume-btn {
+    right: 12px;
+    bottom: 12px;
+    font-size: 15px;
+    padding: 7px 13px 7px 11px;
+  }
+}

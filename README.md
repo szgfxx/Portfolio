@@ -12,7 +12,7 @@ A static site for GitHub Pages, with no build step and no dependencies. Every sc
 
 All the text is in **`js/content.js`**. Any string that starts with `TODO` is shown with a striped highlight so placeholders are easy to spot.
 
-- **Résumé:** put the PDF in `assets/` and set `links.resume: "assets/resume.pdf"`.
+- **Résumé:** replace `assets/Sagun-Bhandari-Resume.pdf` with a new PDF of the same name (the hello-page button and the résumé pills link to it).
 - **Sagun's outfit and hair colors:** change the `--hair`, `--bangs`, `--peek`, `--kurta`… variables at the top of `css/base.css`.
 - **The character drawing:** `js/sagun.js`.
 

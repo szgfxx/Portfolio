@@ -88,6 +88,14 @@
       limb([[63, 211, 1.8], [65.5, 215, 1.6], [65.5, 219, 1.4]]),
     ]);
 
+    const restArmG = (cls) => `
+  <g transform="translate(5.5 0)"><g class="${cls}">
+    <path d="${restArm}" fill="var(--skin)"/>
+    <path d="M66.5 150 Q64 164 62.5 178" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".55" stroke-linecap="round"/>
+    ${restHand}
+    <path d="M57.5 220 L57.5 222 M60 221 L60 223 M62 220.5 L62.2 222" stroke="var(--skin-shade)" stroke-width=".8" opacity=".7"/>
+  </g></g>`;
+
     // waving hand: open palm facing out, fingers fanned, thumb to the side
     const waveHand = parts([
       limb([[158.5, 78, 3.8], [160, 71, 5.2], [161, 65, 5]]),
@@ -99,7 +107,7 @@
     ]);
 
     return `
-<svg class="sagun sagun--${pose}" viewBox="0 0 200 360" role="img" aria-label="Illustration of Sagun waving: short black hair with black-blue front pieces and green tips, wearing a cropped black smocked tube top with sequin rhododendrons and baggy cargo pants">
+<svg class="sagun sagun--${pose}" viewBox="0 0 200 360" role="img" aria-label="Illustration of Sagun ${pose === "wave" ? "waving" : pose === "walk" ? "walking" : "standing"}: short black hair with black-blue front pieces and green tips, wearing a cropped black smocked tube top with sequin rhododendrons and baggy cargo pants">
   <defs>
     <linearGradient id="${id}-hair" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="var(--hair)"/>
@@ -128,6 +136,7 @@
   <!-- shadow -->
   <ellipse cx="100" cy="346" rx="54" ry="7" fill="rgba(0,0,0,.25)"/>
 
+  <g class="sagun__body">
   <!-- short hair, back -->
   <path d="M58 84 C48 28 152 28 142 84 C148 98 150 110 146 120 C140 126 132 124 128 120 L72 120
            C68 124 60 126 54 120 C50 110 52 98 58 84Z" fill="url(#${id}-hair)"/>
@@ -145,23 +154,29 @@
   <path d="M71 190 Q72 198 71 206 M129 190 Q128 198 129 206" stroke="var(--skin-shade)" stroke-width="1.2" fill="none" opacity=".6"/>
   <path d="M99.3 197 q.7 1.6 1.4 0" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
 
-  <!-- straight, baggy low-waist cargo pants pooling at the ankles -->
-  <path d="M70 206 L130 206 C133 240 135 290 137 334 Q120 338 102 334 L100 242 L98 334 Q80 338 63 334 C65 290 67 240 70 206Z" fill="var(--pants)"/>
-  <path d="M80 216 Q78 270 74 330 M90 222 Q90 280 88 332 M110 222 Q110 280 112 332 M120 216 Q122 270 126 330"
-        stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
-  <path d="M65 314 q8 3 16 -1 t16 1 M103 314 q8 3 16 -1 t17 1 M64 324 q9 3 17 -1 t16 1 M103 324 q9 3 17 -1 t16 1"
-        stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
-  <rect x="64.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
-  <rect x="64" y="246" width="16" height="6" rx="1.5" fill="var(--pants-dark)"/>
-  <circle cx="72" cy="250" r=".9" fill="#c9c3a8"/>
-  <rect x="120.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
-  <rect x="120" y="246" width="16" height="6" rx="1.5" fill="var(--pants-dark)"/>
-  <circle cx="128" cy="250" r=".9" fill="#c9c3a8"/>
+  <!-- straight, baggy low-waist cargo pants pooling at the ankles; each leg is its own group so it can walk -->
+  <g class="sagun__leg sagun__leg--l">
+    <path d="M70 206 L101 206 L101 242 L98 334 Q80 338 63 334 C65 290 67 240 70 206Z" fill="var(--pants)"/>
+    <path d="M80 216 Q78 270 74 330 M90 222 Q90 280 88 332" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
+    <path d="M65 314 q8 3 16 -1 t16 1 M64 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
+    <rect x="64.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
+    <rect x="64" y="246" width="16" height="6" rx="1.5" fill="var(--pants-dark)"/>
+    <circle cx="72" cy="250" r=".9" fill="#c9c3a8"/>
+    <path d="M70 334 h26 c2 6 0 10 -6 10 h-16 c-6 0 -8 -4 -4 -10Z" fill="var(--shoe)"/>
+    <path d="M68 341 h28" stroke="#e9e4d8" stroke-width="2"/>
+  </g>
+  <g class="sagun__leg sagun__leg--r">
+    <path d="M99 206 L130 206 C133 240 135 290 137 334 Q120 338 102 334 L99 242Z" fill="var(--pants)"/>
+    <path d="M110 222 Q110 280 112 332 M120 216 Q122 270 126 330" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
+    <path d="M103 314 q8 3 16 -1 t17 1 M103 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
+    <rect x="120.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
+    <rect x="120" y="246" width="16" height="6" rx="1.5" fill="var(--pants-dark)"/>
+    <circle cx="128" cy="250" r=".9" fill="#c9c3a8"/>
+    <path d="M104 334 h26 c4 6 2 10 -4 10 h-16 c-6 0 -8 -4 -6 -10Z" fill="var(--shoe)"/>
+    <path d="M104 341 h28" stroke="#e9e4d8" stroke-width="2"/>
+  </g>
   <path d="M70 204 L130 204 L130 212 L70 212 Z" fill="var(--pants-dark)"/>
   <path d="M79 204 v8 M100 204 v8 M121 204 v8" stroke="var(--pants)" stroke-width="2"/>
-  <path d="M70 334 h26 c2 6 0 10 -6 10 h-16 c-6 0 -8 -4 -4 -10Z" fill="var(--shoe)"/>
-  <path d="M104 334 h26 c4 6 2 10 -4 10 h-16 c-6 0 -8 -4 -6 -10Z" fill="var(--shoe)"/>
-  <path d="M68 341 h28 M104 341 h28" stroke="#e9e4d8" stroke-width="2"/>
 
   <!-- tube top: straight fit, cropped above the stomach -->
   <path d="${BODICE}" fill="var(--top)"/>
@@ -179,14 +194,9 @@
   ${rhodo(86.6, 178, 0.8)}
   ${rhodo(113.4, 178, 0.8)}
 
-  <!-- resting arm + hand -->
-  <g class="sagun__arm-rest" transform="translate(5.5 0)">
-    <path d="${restArm}" fill="var(--skin)"/>
-    <path d="M66.5 150 Q64 164 62.5 178" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".55" stroke-linecap="round"/>
-    ${restHand}
-    <path d="M57.5 220 L57.5 222 M60 221 L60 223 M62 220.5 L62.2 222" stroke="var(--skin-shade)" stroke-width=".8" opacity=".7"/>
-  </g>
-
+  <!-- resting arm + hand (mirrored for the right arm when walking) -->
+  ${restArmG("sagun__swing sagun__swing--l")}
+  ${pose !== "wave" ? `<g transform="translate(200 0) scale(-1 1)">${restArmG("sagun__swing sagun__swing--r")}</g>` : `
   <!-- waving arm + hand -->
   <g transform="translate(-5.5 0)">
   <g class="sagun__arm-wave">
@@ -197,7 +207,7 @@
       <path d="M157 68 Q161 70 165 67" stroke="var(--skin-shade)" stroke-width=".9" fill="none" opacity=".7" stroke-linecap="round"/>
     </g>
   </g>
-  </g>
+  </g>`}
 
   <!-- head -->
   <g class="sagun__head">
@@ -231,6 +241,7 @@
           stroke="var(--bangs-dark)" stroke-width="1.5" fill="none" opacity=".6"/>
     <path d="M72 66 C76 58 82 52 88 49 M126 70 C121 61 114 55 106 51" stroke="#fff" stroke-width="2.2" fill="none" opacity=".22" stroke-linecap="round"/>
   </g>
+  </g>
 </svg>`;
   }
 
@@ -240,9 +251,21 @@
     return el.firstElementChild;
   };
 
+  /* A walker holds both poses: it waves when idle and walks while the page
+     adds .is-walking (the scene scripts do that while the camera moves). */
+  window.makeWalker = function (el, idle) {
+    el.classList.add("walker");
+    el.innerHTML = '<span class="walker__pose walker__pose--wave"></span><span class="walker__pose walker__pose--walk"></span>';
+    window.renderSagun(el.children[0], { pose: idle || "wave" });
+    window.renderSagun(el.children[1], { pose: "walk" });
+    return el;
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll("[data-sagun]").forEach(function (el) {
-      window.renderSagun(el, { pose: el.getAttribute("data-sagun") || "wave" });
+      const pose = el.getAttribute("data-sagun") || "wave";
+      if (pose === "walker") window.makeWalker(el, el.getAttribute("data-idle"));
+      else window.renderSagun(el, { pose: pose });
     });
   });
 })();

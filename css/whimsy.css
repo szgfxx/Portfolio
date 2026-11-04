@@ -1,5 +1,5 @@
 body.whimsy {
-  background: #4aa3c4;
+  background: #3f8fb0;
   --hand: "Gaegu", "Mukta", cursive;
   color: #2a1d14;
 }
@@ -43,10 +43,10 @@ body.whimsy {
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: clamp(16px, 5vw, 70px);
-  padding-top: 70px;
+  padding-top: max(80px, 13vh);
   flex-wrap: wrap;
 }
 .w-hero__text {
@@ -89,17 +89,18 @@ body.whimsy {
   color: #2f7f99;
 }
 
+/* Sagun strolling the pavement; positioned by js/whimsy.js */
 .w-sagun {
-  position: relative;
-  width: clamp(150px, 22vw, 230px);
-  aspect-ratio: 200 / 360;
+  position: fixed;
+  z-index: 6;
   padding: 0;
   border: 0;
   background: none;
   cursor: pointer;
-  animation: bob 2.2s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
 }
 .w-sagun__fig {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
@@ -114,10 +115,11 @@ body.whimsy {
 .w-bubble {
   position: absolute;
   bottom: 96%;
-  left: 50%;
+  left: 0;
   width: max-content;
-  max-width: min(280px, 80vw);
-  transform: translateX(-50%) rotate(-2deg);
+  max-width: min(280px, 70vw);
+  transform: rotate(-2deg);
+  transform-origin: 0 100%;
   padding: 10px 16px;
   border-radius: 18px;
   background: #fff;
@@ -131,10 +133,9 @@ body.whimsy {
   content: "";
   position: absolute;
   top: 100%;
-  left: 50%;
+  left: 24px;
   border: 9px solid transparent;
   border-top-color: #fff;
-  transform: translateX(-50%);
 }
 
 /* ---------- sections ---------- */
@@ -369,4 +370,29 @@ body.whimsy {
     transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.4);
     opacity: 0;
   }
+}
+
+/* ---------- the walk ---------- */
+.w-walk {
+  position: relative;
+}
+.w-sagun {
+  transition: transform 0.8s cubic-bezier(0.3, 0.8, 0.4, 1);
+}
+.w-sagun.is-walking {
+  transform: translateX(3vw);
+}
+.w-bubble {
+  min-width: 120px;
+  max-width: min(330px, 72vw);
+}
+.w-bubble.is-new {
+  animation: bubble-pop 0.35s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.w-bubble.todo {
+  outline-offset: -4px;
+}
+@keyframes bubble-pop {
+  from { transform: scale(0.6) rotate(-6deg); opacity: 0.4; }
+  to { transform: rotate(-2deg); opacity: 1; }
 }

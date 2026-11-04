@@ -127,6 +127,55 @@ svg {
   96% { transform: scaleY(0.1); }
 }
 
+/* walking pose: legs scissor, arms swing, body bobs */
+.sagun__leg,
+.sagun__swing,
+.sagun__body {
+  transform-box: view-box;
+}
+.sagun__leg--l { transform-origin: 86px 210px; }
+.sagun__leg--r { transform-origin: 114px 210px; }
+.sagun__swing { transform-origin: 69px 139px; }
+.sagun--walk .sagun__leg--l { animation: sagun-step 0.7s linear infinite; }
+.sagun--walk .sagun__leg--r { animation: sagun-step 0.7s linear -0.35s infinite; }
+.sagun--walk .sagun__swing--l { animation: sagun-swing 0.7s ease-in-out infinite; }
+.sagun--walk .sagun__swing--r { animation: sagun-swing 0.7s ease-in-out -0.35s infinite; }
+.sagun--walk .sagun__body { transform-origin: 100px 340px; animation: sagun-bob 0.35s ease-in-out infinite alternate; }
+/* a clear stride: one leg lifts and swings forward while the other plants */
+@keyframes sagun-step {
+  0%, 100% { transform: rotate(-9deg) translateY(-9px); }
+  25% { transform: rotate(0deg) translateY(-4px); }
+  50% { transform: rotate(8deg) translateY(0); }
+  75% { transform: rotate(0deg) translateY(0); }
+}
+@keyframes sagun-swing {
+  0%, 100% { transform: rotate(14deg); }
+  50% { transform: rotate(-14deg); }
+}
+@keyframes sagun-bob {
+  from { transform: translateY(0) rotate(-1.5deg); }
+  to { transform: translateY(-6px) rotate(1.5deg); }
+}
+
+/* a walker shows the wave pose when idle, the walk pose while moving */
+.walker {
+  display: block;
+  aspect-ratio: 200 / 360;
+}
+.walker__pose {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transition: opacity 0.15s;
+}
+.walker__pose--walk,
+.walker.is-walking .walker__pose--wave {
+  opacity: 0;
+}
+.walker.is-walking .walker__pose--walk {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
