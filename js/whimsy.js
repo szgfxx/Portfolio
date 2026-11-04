@@ -66,12 +66,15 @@
     const top = walkEl.offsetTop, h = walkEl.offsetHeight;
     const p = (window.scrollY + window.innerHeight * 0.6 - top) / h;
     if (p < 0) return -1;
-    return Math.min(YAP.length - 1, Math.floor(p * YAP.length));
+    return Math.min(YAP.length, Math.floor(p * YAP.length));
   }
   function updateYap() {
-    if (Date.now() < pokeUntil) return;
     const i = lineAt();
-    say(i < 0 ? "psst. scroll and walk with me" : YAP[i].text);
+    // quiet before the walk starts, gone once she's walked off to the momo stall
+    btn.classList.toggle("is-away", i >= YAP.length);
+    if (Date.now() < pokeUntil) return;
+    btn.classList.toggle("is-quiet", i < 0);
+    if (i >= 0 && i < YAP.length) say(YAP[i].text);
   }
 
   let fi = -1;
@@ -79,6 +82,7 @@
     fi = (fi + 1) % facts.length;
     pokeUntil = Date.now() + 3500;
     shown = null;
+    btn.classList.remove("is-quiet");
     say(facts[fi]);
     btn.classList.remove("is-poked");
     void btn.offsetWidth;
@@ -121,361 +125,353 @@
   });
 
 
-  /* ---------- the lakeside walk ----------
-     Side-on: shops along the back, a stone pavement in the middle, Phewa in
-     front. Scrolling walks Sagun along the pavement. */
+
+  /* ---------- the lakeside walk, front view ----------
+     We look back along the stone promenade: Phewa on the left, shops on the
+     right, Sagun walking toward us. Scrolling walks her (and us) forward, so
+     the lakeside slides away behind her. Units are metres-ish; y is up. */
   const cvs = document.getElementById("lake-scene");
   const ctx = cvs.getContext("2d");
-  let W, H, U, SX, PB, PF, FEET, camX = 0;
-  const WORLD = 900; // length of the walk, in U (1 U = 1% of screen height)
+  const EYE = 1.6, LEN = 150;
+  const WALL_X = -2.7, SHOP_X = 3.1, SAGUN_X = 0.3;
+  let W, H, F, HOR, DS, camZ = 0;
 
-  const sxw = (x) => SX + (x - camX) * U; // world → screen
+  // world → screen; returns [x, y, scale, depth]
+  function P(x, y, z) {
+    const dz = Math.max(z - camZ, 0.3);
+    const s = F / dz;
+    return [W / 2 + x * s, HOR + (EYE - y) * s, s, dz];
+  }
+  const HAZE = S.hex("#dcecf2");
+  const fog = (dz) => 1 - Math.exp(-dz / 55);
+  const tint = (hex, dz) => S.rgb(S.mix(S.hex(hex), HAZE, fog(dz) * 0.85));
 
-  // shops, trees, lamps, benches and the two bins, placed once
+  /* ---- what's along the promenade ---- */
   const SIGNS = ["Momo House", "Trekking Gear", "Lakeside Café", "Pashmina", "Thangka Art", "Books & Maps", "Juice Bar", "Rooftop Pizza", "Singing Bowls", "Boat Rental", "Lassi Corner", "Yak Cheese", "Tibetan Bread", "Fewa Souvenirs"];
   const WALLS = ["#f3e6cf", "#f6d9a8", "#e9c9b3", "#dfe8ee", "#f7f1e6", "#f2c6a0", "#d8e6d0", "#f4d6d6"];
   const TRIM = ["#b8432f", "#2f6fd0", "#2f8a4b", "#c98a2b", "#8a3b6b", "#2a6f86"];
-  const shops = [], props = [];
+  const GOODS = ["#d4302b", "#2f6fd0", "#f2c230", "#2f9a4b", "#e56aa0", "#7a4bc2"];
+  const things = []; // shops + props, drawn far → near
+  const boats = [];
   (function place() {
     const r = S.rng(77);
-    let x = -80, k = 0;
-    while (x < WORLD + 200) {
-      if (r() < 0.16) {
-        props.push({ kind: "tree", x: x + 7, s: 0.9 + r() * 0.5 });
-        x += 14;
-        continue;
-      }
-      const w = 18 + r() * 12;
-      shops.push({
-        x, w,
-        h: 17 + r() * 14,
-        floors: 2 + ((r() * 2) | 0),
-        wall: WALLS[(r() * WALLS.length) | 0],
-        trim: TRIM[(r() * TRIM.length) | 0],
-        awning: TRIM[(r() * TRIM.length) | 0],
-        sign: SIGNS[k++ % SIGNS.length],
-        roof: r() < 0.5 ? "flat" : "tin",
-        goods: r() < 0.55,
+    let z = -LEN - 20, k = 0;
+    while (z < 110) {
+      const w = 3.6 + r() * 2.6;
+      things.push({
+        kind: "shop", z0: z, z1: z + w, h: 4 + r() * 3.5,
+        wall: WALLS[(r() * WALLS.length) | 0], trim: TRIM[(r() * TRIM.length) | 0],
+        awning: TRIM[(r() * TRIM.length) | 0], sign: SIGNS[k++ % SIGNS.length], seed: r() * 100,
       });
-      x += w + 1 + r() * 3;
+      z += w + (r() < 0.25 ? 0.6 : 0.05);
     }
-    for (let lx = 20; lx < WORLD + 200; lx += 46) props.push({ kind: "lamp", x: lx });
-    [70, 250, 470].forEach((bx) => props.push({ kind: "bench", x: bx }));
-    // bins: positioned on resize so she passes one during each "bin" line
-    YAP.forEach((y, i) => y.bin && props.push({ kind: "bin", x: 0, line: i }));
-    props.sort((a, b) => a.x - b.x);
+    for (let z = -LEN - 20; z < 110; z += 7) things.push({ kind: "lamp", z, x: WALL_X + 0.35 });
+    for (let z = -LEN - 12; z < 110; z += 17 + r() * 8) things.push({ kind: "tree", z, x: WALL_X + 0.9, s: 0.9 + r() * 0.4 });
+    for (let z = -LEN - 18; z < 110; z += 26) things.push({ kind: "flags", z });
+    // two bins, moved into place by placeBins() so she passes each during its line
+    YAP.forEach((y, i) => y.bin && things.push({ kind: "bin", z: 0, x: WALL_X + 0.55, line: i }));
+    // moored doongas along the wall, plus a few out on the water
+    for (let z = -LEN - 20; z < 110; z += 4 + r() * 3) boats.push({ x: WALL_X - 1.3 - r() * 0.6, z, c: r(), rower: false, drift: 0 });
+    for (let i = 0; i < 22; i++) boats.push({ x: -8 - r() * 45, z: -LEN + r() * (LEN + 120), c: r(), rower: true, drift: 0.2 + r() * 0.5 });
   })();
+  const zOf = (o) => (o.kind === "shop" ? o.z1 : o.z);
 
-  function shop(o, t) {
-    const x = sxw(o.x), w = o.w * U, h = o.h * U, base = PB;
-    if (x > W || x + w < 0) return;
-    const top = base - h;
-    // walls
-    ctx.fillStyle = o.wall;
-    ctx.fillRect(x, top, w, h);
-    ctx.fillStyle = "rgba(0,0,0,.06)";
-    ctx.fillRect(x + w * 0.86, top, w * 0.14, h);
-    // roof
-    if (o.roof === "tin") {
-      ctx.fillStyle = o.trim;
-      ctx.beginPath();
-      ctx.moveTo(x - U * 1.2, top + U * 0.4);
-      ctx.lineTo(x + w * 0.5, top - U * 4);
-      ctx.lineTo(x + w + U * 1.2, top + U * 0.4);
-      ctx.fill();
-    } else {
-      ctx.fillStyle = "rgba(0,0,0,.18)";
-      ctx.fillRect(x - U * 0.4, top - U * 1.2, w + U * 0.8, U * 1.4);
-      // rooftop water tank, very Pokhara
-      ctx.fillStyle = "#2b2b2b";
-      ctx.fillRect(x + w * 0.65, top - U * 4, U * 3, U * 2.9);
+  /* ---- painters ---- */
+  function quad(a, b, c, d, fill) {
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.lineTo(c[0], c[1]);
+    ctx.lineTo(d[0], d[1]);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function shop(o) {
+    if (o.z1 < camZ + 0.4 || o.z0 > camZ + 160) return;
+    const z0 = Math.max(o.z0, camZ + 0.4), z1 = o.z1, X = SHOP_X;
+    const dz = (z0 + z1) / 2 - camZ;
+    const f = (x, y, z) => P(x, y, z);
+    // facade
+    quad(f(X, 0, z0), f(X, o.h, z0), f(X, o.h, z1), f(X, 0, z1), tint(o.wall, dz));
+    // roof parapet
+    quad(f(X, o.h, z0), f(X - 0.25, o.h + 0.25, z0), f(X - 0.25, o.h + 0.25, z1), f(X, o.h, z1), tint(o.trim, dz));
+    const near = f(X, 0, z1)[2]; // px per metre at the far edge
+    if (near < 2) return;
+    // upper-floor windows
+    for (let y = 3.2; y + 1.3 < o.h; y += 1.6) {
+      for (let wz = o.z0 + 0.6; wz + 0.9 < o.z1 - 0.3; wz += 1.5) {
+        if (wz < camZ + 0.4) continue;
+        quad(f(X, y, wz), f(X, y + 1, wz), f(X, y + 1, wz + 0.8), f(X, y, wz + 0.8), tint("#3a4250", dz));
+        quad(f(X, y + 1, wz - 0.1), f(X - 0.08, y + 1.12, wz - 0.1), f(X - 0.08, y + 1.12, wz + 0.9), f(X, y + 1, wz + 0.9), tint(o.trim, dz));
+      }
     }
-    // upper-floor windows + balcony
-    const shopH = U * 8.5;
-    const fh = (h - shopH) / (o.floors - 1 || 1);
-    for (let f = 0; f < o.floors - 1; f++) {
-      const fy = top + f * fh;
-      const n = Math.max(2, Math.round(o.w / 8));
+    // open shopfront, lit inside
+    const s0 = Math.max(o.z0 + 0.25, camZ + 0.4), s1 = o.z1 - 0.25;
+    if (s1 > s0) {
+      quad(f(X, 0.05, s0), f(X, 2.3, s0), f(X, 2.3, s1), f(X, 0.05, s1), tint("#6b5a44", dz));
+      // pashminas and bags hanging in the doorway
+      const n = Math.max(3, Math.round((s1 - s0) / 0.45));
       for (let i = 0; i < n; i++) {
-        const wx = x + (w / n) * (i + 0.5) - U * 1.4;
-        ctx.fillStyle = "#3a4250";
-        ctx.fillRect(wx, fy + fh * 0.25, U * 2.8, fh * 0.45);
-        ctx.fillStyle = o.trim;
-        ctx.fillRect(wx - U * 0.3, fy + fh * 0.22, U * 3.4, U * 0.5);
-      }
-      ctx.fillStyle = "rgba(60,40,30,.55)";
-      ctx.fillRect(x + U, fy + fh * 0.82, w - U * 2, U * 0.4);
-    }
-    // shopfront
-    const sy0 = base - shopH;
-    ctx.fillStyle = "#2c2420";
-    ctx.fillRect(x + U * 1.5, sy0 + U * 3.2, w - U * 3, shopH - U * 3.2);
-    ctx.fillStyle = "#f6d68a";
-    ctx.globalAlpha = 0.35;
-    ctx.fillRect(x + U * 1.5, sy0 + U * 3.2, w - U * 3, shopH - U * 3.2);
-    ctx.globalAlpha = 1;
-    if (o.goods) {
-      // hanging pashminas / bags
-      const cols = ["#d4302b", "#2f6fd0", "#f2c230", "#2f9a4b", "#e56aa0", "#7a4bc2"];
-      for (let i = 0; i < 6; i++) {
-        ctx.fillStyle = cols[(i + Math.round(o.x)) % cols.length];
-        ctx.fillRect(x + U * 2.2 + i * (w - U * 4.4) / 6, sy0 + U * 3.6, (w - U * 4.4) / 6 - U * 0.4, U * (2.4 + (i % 3) * 0.7));
+        const a = S.lerp(s0, s1, i / n) + 0.04, b = S.lerp(s0, s1, (i + 1) / n) - 0.04;
+        const len = 0.8 + S.hash(o.seed + i) * 0.7;
+        quad(f(X - 0.02, 2.2, a), f(X - 0.02, 2.2, b), f(X - 0.02, 2.2 - len, b), f(X - 0.02, 2.2 - len, a), tint(GOODS[(i + (o.seed | 0)) % 6], dz));
       }
     }
-    // striped awning
-    const aw = w + U * 1.2, ax = x - U * 0.6, ay = sy0 + U * 2.4;
-    const stripes = Math.max(4, Math.round(o.w / 2.5));
-    for (let i = 0; i < stripes; i++) {
-      ctx.fillStyle = i % 2 ? "#fff8ea" : o.awning;
-      ctx.beginPath();
-      const x0 = ax + (aw / stripes) * i, x1 = ax + (aw / stripes) * (i + 1);
-      ctx.moveTo(x0 + U * 0.6, ay - U * 1.2);
-      ctx.lineTo(x1 + U * 0.6, ay - U * 1.2);
-      ctx.lineTo(x1, ay + U * 1.2);
-      ctx.quadraticCurveTo((x0 + x1) / 2, ay + U * 2, x0, ay + U * 1.2);
-      ctx.fill();
+    // striped awning sloping out over the pavement
+    const st = Math.max(4, Math.round((o.z1 - o.z0) / 0.5));
+    for (let i = 0; i < st; i++) {
+      const a = S.lerp(o.z0, o.z1, i / st), b = S.lerp(o.z0, o.z1, (i + 1) / st);
+      if (b < camZ + 0.4) continue;
+      const aa = Math.max(a, camZ + 0.4);
+      quad(f(X, 2.85, aa), f(X, 2.85, b), f(X - 1.1, 2.45, b), f(X - 1.1, 2.45, aa), tint(i % 2 ? "#fff8ea" : o.awning, dz));
     }
-    // sign board
-    ctx.font = `700 ${Math.max(9, U * 1.6)}px Mukta, sans-serif`;
-    const tw = Math.min(ctx.measureText(o.sign).width + U * 2, w - U);
-    ctx.fillStyle = o.trim;
-    ctx.fillRect(x + (w - tw) / 2, sy0 - U * 1.8, tw, U * 2.6);
-    ctx.fillStyle = "#fff8ea";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText(o.sign, x + w / 2, sy0 - U * 0.5, w - U * 2);
-    ctx.textAlign = "start";
+    // blade sign facing us, so it reads straight on
+    const sz = o.z0 + 0.15;
+    if (sz > camZ + 0.6) {
+      const a = P(X - 1.5, 3.55, sz), b = P(X - 0.05, 3.0, sz);
+      ctx.fillStyle = tint(o.trim, sz - camZ);
+      ctx.fillRect(a[0], a[1], b[0] - a[0], b[1] - a[1]);
+      const fs = 0.2 * a[2];
+      if (fs >= 6) {
+        ctx.font = `700 ${fs}px Mukta, sans-serif`;
+        ctx.fillStyle = "#fff8ea";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(o.sign, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (b[0] - a[0]) * 0.92);
+        ctx.textAlign = "start";
+      }
+    }
   }
 
   function prop(o, t) {
-    const x = sxw(o.x);
-    if (x < -U * 20 || x > W + U * 20) return;
-    const base = PB + U * 1.6; // props stand at the back edge of the pavement
+    const dz = o.z - camZ;
+    if (dz < (o.kind === "tree" ? 4 : o.kind === "lamp" ? 3 : 2.2) || dz > 150) return;
+    const [x, y, s] = P(o.x || 0, 0, o.z);
+    if (x < -s * 3 || x > W + s * 3) return;
     switch (o.kind) {
+      case "lamp": {
+        ctx.fillStyle = tint("#2e3a3e", dz);
+        ctx.fillRect(x - 0.05 * s, y - 3.3 * s, 0.1 * s, 3.3 * s);
+        ctx.fillRect(x - 0.13 * s, y - 0.15 * s, 0.26 * s, 0.15 * s);
+        ctx.fillRect(x - 0.17 * s, y - 3.55 * s, 0.34 * s, 0.25 * s);
+        ctx.fillStyle = tint("#ffe9a8", dz);
+        ctx.fillRect(x - 0.11 * s, y - 3.5 * s, 0.22 * s, 0.18 * s);
+        break;
+      }
       case "tree": {
-        const s = o.s * U;
-        ctx.fillStyle = "#5a3d27";
-        ctx.fillRect(x - s * 0.8, base - s * 16, s * 1.6, s * 16);
-        ctx.fillStyle = "#cfc4b0"; // chautari ring
-        ctx.fillRect(x - s * 4, base - s * 1.6, s * 8, s * 1.6);
-        const blobs = [[0, -24, 8], [-6, -19, 6.5], [6.5, -19.5, 6.5], [-3, -28, 6], [4, -27, 6]];
-        blobs.forEach((b, i) => {
-          ctx.fillStyle = i % 2 ? "#3f7a3c" : "#2f6531";
+        const k = o.s * s;
+        ctx.fillStyle = tint("#cfc4b0", dz); // chautari ring
+        ctx.fillRect(x - 0.9 * k, y - 0.45 * k, 1.8 * k, 0.45 * k);
+        ctx.fillStyle = tint("#5a3d27", dz);
+        ctx.fillRect(x - 0.15 * k, y - 3.4 * k, 0.3 * k, 3 * k);
+        [[0, -4.4, 1.6], [-1.1, -3.7, 1.2], [1.1, -3.8, 1.2], [-0.5, -5.2, 1.1], [0.7, -5, 1.1]].forEach((b, i) => {
+          ctx.fillStyle = tint(i % 2 ? "#3f7a3c" : "#2f6531", dz);
           ctx.beginPath();
-          ctx.arc(x + b[0] * s, base + b[1] * s, b[2] * s, 0, Math.PI * 2);
+          ctx.arc(x + b[0] * k, y + b[1] * k, b[2] * k, 0, Math.PI * 2);
           ctx.fill();
         });
         break;
       }
-      case "lamp": {
-        ctx.fillStyle = "#2e3a3e";
-        ctx.fillRect(x - U * 0.3, base - U * 15, U * 0.6, U * 15);
-        ctx.fillRect(x - U * 0.9, base - U * 0.8, U * 1.8, U * 0.8);
-        ctx.beginPath();
-        ctx.moveTo(x - U * 1.3, base - U * 15);
-        ctx.lineTo(x + U * 1.3, base - U * 15);
-        ctx.lineTo(x + U * 0.8, base - U * 17);
-        ctx.lineTo(x - U * 0.8, base - U * 17);
-        ctx.fill();
-        ctx.fillStyle = "#ffe9a8";
-        ctx.fillRect(x - U * 0.7, base - U * 16.7, U * 1.4, U * 1.5);
-        break;
-      }
-      case "bench": {
-        ctx.fillStyle = "#7a4f2c";
-        ctx.fillRect(x - U * 5, base - U * 3, U * 10, U * 0.8);
-        ctx.fillRect(x - U * 5, base - U * 5.4, U * 10, U * 0.7);
-        ctx.fillRect(x - U * 5, base - U * 4.3, U * 10, U * 0.7);
-        ctx.fillStyle = "#3a3a3a";
-        ctx.fillRect(x - U * 4.4, base - U * 5.4, U * 0.6, U * 5.4);
-        ctx.fillRect(x + U * 3.8, base - U * 5.4, U * 0.6, U * 5.4);
-        break;
-      }
       case "bin": {
-        ctx.save();
-        ctx.translate(x, base);
-        ctx.scale(1.45, 1.45);
-        ctx.translate(-x, -base);
-        // the classic pair: green for कुहिने (organic), blue for नकुहिने (everything else)
-        ctx.fillStyle = "#3b3b3b";
-        ctx.fillRect(x - U * 0.35, base - U * 7, U * 0.7, U * 7);
-        const bin = (bx, col, dark, label) => {
-          const bw = U * 3.4, bh = U * 4.6, by = base - U * 7.6;
-          ctx.fillStyle = col;
+        // the classic pair: green कुहिने (compost), blue नकुहिने (everything else)
+        ctx.fillStyle = tint("#3b3b3b", dz);
+        ctx.fillRect(x - 0.04 * s, y - 1.25 * s, 0.08 * s, 1.25 * s);
+        const one = (bx, col, dark, label) => {
+          const bw = 0.42 * s, bh = 0.62 * s, by = y - 1.32 * s;
+          ctx.fillStyle = tint(col, dz);
           ctx.beginPath();
           ctx.moveTo(bx - bw / 2, by);
           ctx.lineTo(bx + bw / 2, by);
           ctx.lineTo(bx + bw * 0.42, by + bh);
           ctx.lineTo(bx - bw * 0.42, by + bh);
           ctx.fill();
-          ctx.fillStyle = dark;
-          ctx.fillRect(bx - bw * 0.56, by - U * 0.8, bw * 1.12, U * 0.9);
-          ctx.fillRect(bx + bw * 0.12, by - U * 0.3, bw * 0.24, U * 0.25);
-          ctx.fillStyle = "#fff";
-          ctx.font = `700 ${Math.max(7, U * 0.95)}px Mukta, sans-serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(label, bx, by + bh * 0.5, bw * 0.85);
-          ctx.textAlign = "start";
+          ctx.fillStyle = tint(dark, dz);
+          ctx.fillRect(bx - bw * 0.56, by - 0.1 * s, bw * 1.12, 0.11 * s);
+          const fs = 0.12 * s;
+          if (fs >= 6) {
+            ctx.fillStyle = "#fff";
+            ctx.font = `700 ${fs}px Mukta, sans-serif`;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(label, bx, by + bh * 0.5, bw * 0.9);
+            ctx.textAlign = "start";
+          }
         };
-        bin(x - U * 1.85, "#2f8a3e", "#1f5f2a", "कुहिने");
-        bin(x + U * 1.85, "#2f6fd0", "#1f4c94", "नकुहिने");
-        ctx.restore();
+        one(x - 0.23 * s, "#2f8a3e", "#1f5f2a", "कुहिने");
+        one(x + 0.23 * s, "#2f6fd0", "#1f4c94", "नकुहिने");
+        break;
+      }
+      case "flags": {
+        // prayer flags strung from a rooftop across to a lamp post
+        const a = P(SHOP_X, 6, o.z), b = P(WALL_X + 0.35, 3.4, o.z + 3);
+        if (a[3] < 5) break;
+        S.flags(ctx, a[0], a[1], b[0], b[1], 0.5 * b[2], t, Math.max(3, 0.28 * b[2]), 1 - fog(dz) * 0.8);
         break;
       }
     }
   }
 
-  function pavement() {
-    // back curb
-    ctx.fillStyle = "#9b9488";
-    ctx.fillRect(0, PB, W, U * 1.6);
-    ctx.fillStyle = "#b5ae9f";
-    ctx.fillRect(0, PB, W, U * 0.5);
-    // stone pavers in rows that get taller toward us
-    const rows = [[PB + U * 1.6, 2.6], [0, 3.1], [0, 3.6], [0, 4.2]];
-    let y = PB + U * 1.6;
-    const avail = PF - y;
-    const tot = rows.reduce((a, r) => a + r[1], 0);
-    rows.forEach((row, ri) => {
-      const rh = (avail * row[1]) / tot;
-      ctx.fillStyle = "#5f5a52"; // grout
-      ctx.fillRect(0, y, W, rh);
-      const sw = 7 + ri * 1.2; // stone width in U
-      const k0 = Math.floor((camX - SX / U) / sw) - 1;
-      const k1 = Math.ceil((camX + (W - SX) / U) / sw) + 1;
-      for (let k = k0; k <= k1; k++) {
-        const hsh = S.hash(k * 7.7 + ri * 31);
-        const off = ri % 2 ? sw * 0.5 : 0;
-        const x0 = sxw(k * sw + off) + U * 0.25;
-        const w = sw * U - U * 0.5;
-        const tone = 0.82 + hsh * 0.3;
-        const c = [150 * tone, 143 * tone, 130 * tone];
-        ctx.fillStyle = S.rgb(c);
-        const j = U * 0.3;
-        ctx.beginPath();
-        ctx.moveTo(x0 + j * hsh, y + U * 0.25);
-        ctx.lineTo(x0 + w - j * (1 - hsh), y + U * 0.25 + j * 0.5);
-        ctx.lineTo(x0 + w, y + rh - U * 0.25);
-        ctx.lineTo(x0, y + rh - U * 0.25 - j * hsh);
-        ctx.fill();
-        ctx.fillStyle = "rgba(255,255,255,.12)";
-        ctx.fillRect(x0 + j, y + U * 0.3, w - j * 2, U * 0.35);
-      }
-      y += rh;
-    });
-    // lake wall with a low stone parapet and little bollards
-    ctx.fillStyle = "#857e72";
-    ctx.fillRect(0, PF, W, U * 1.4);
-    ctx.fillStyle = "#a59e90";
-    ctx.fillRect(0, PF, W, U * 0.5);
-    const bs = 16;
-    const b0 = Math.floor((camX - SX / U) / bs) - 1;
-    for (let k = b0; k < b0 + W / (bs * U) + 3; k++) {
-      const bx = sxw(k * bs);
-      ctx.fillStyle = "#77706a";
-      ctx.fillRect(bx - U * 0.9, PF - U * 1.4, U * 1.8, U * 2.2);
-      ctx.fillStyle = "#958d82";
-      ctx.fillRect(bx - U * 1.1, PF - U * 1.8, U * 2.2, U * 0.6);
-    }
-    ctx.fillStyle = "#6c665d";
-    ctx.fillRect(0, PF + U * 1.4, W, U * 2.6);
-    // stone courses in the wall
-    ctx.strokeStyle = "rgba(0,0,0,.18)";
-    ctx.lineWidth = 1;
-    for (let k = b0 * 4; k < b0 * 4 + W / (4 * U) + 12; k++) {
-      const bx = sxw(k * 4 + (k % 2) * 2);
-      ctx.beginPath();
-      ctx.moveTo(bx, PF + U * 1.4);
-      ctx.lineTo(bx, PF + U * 4);
-      ctx.stroke();
-    }
+  function duck(x, y, s, t) {
+    ctx.save();
+    ctx.translate(x, y + Math.sin(t * 2 + x) * s);
+    ctx.scale(s, s);
+    ctx.fillStyle = "#fff8ea";
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 14, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(10, -8, 5.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#f2a630";
+    ctx.beginPath();
+    ctx.moveTo(15, -8);
+    ctx.lineTo(21, -6.5);
+    ctx.lineTo(15, -5.5);
+    ctx.fill();
+    ctx.restore();
   }
 
   function lake(t) {
-    const top = PF + U * 4;
-    const g = ctx.createLinearGradient(0, top, 0, H);
-    g.addColorStop(0, "#4f9fbf");
-    g.addColorStop(1, "#22698a");
-    ctx.fillStyle = g;
-    ctx.fillRect(0, top, W, H - top);
-    // wall's reflection
-    ctx.fillStyle = "rgba(40,50,50,.25)";
-    ctx.fillRect(0, top, W, U * 1.6);
-    // ripples drift a bit faster than the pavement (closer to us)
+    // water fills everything left of the wall, out to the far shore
+    const far = P(WALL_X, 0, camZ + 400), near = P(WALL_X, 0, camZ + 0.35);
+    const wg = ctx.createLinearGradient(0, HOR, 0, H);
+    wg.addColorStop(0, "#9fd0e0");
+    wg.addColorStop(0.25, "#5fa9c6");
+    wg.addColorStop(1, "#2a7395");
+    ctx.fillStyle = wg;
+    ctx.beginPath();
+    ctx.moveTo(-10, HOR);
+    ctx.lineTo(far[0], HOR);
+    ctx.lineTo(near[0], near[1]);
+    ctx.lineTo(-10, H + 10);
+    ctx.closePath();
+    ctx.fill();
+    // Machhapuchhre's reflection, shimmering
+    ctx.save();
+    ctx.clip();
+    ctx.globalAlpha = 0.18;
+    ctx.translate(0, HOR * 2);
+    ctx.scale(1, -1);
+    const mw = Math.max(W * 1.3, H * 1.2);
+    S.himalaya(ctx, W * 0.28 - mw / 2, mw, HOR - H * 0.04, H * 0.24, { haze: "rgba(220,240,246,.9)", base: "#a8c4d8" });
+    ctx.restore();
+    // ripples, endlessly tiled so they're always there
+    ctx.save();
     ctx.strokeStyle = "#ffffff";
-    for (let i = 0; i < 70; i++) {
-      const v = S.hash(i * 3.3);
-      const y = top + U * 2 + v * (H - top);
-      const span = W + 200;
-      const x = (((S.hash(i) * span - camX * U * 1.15 + Math.sin(t * 0.7 + i) * 10) % span) + span) % span - 100;
-      ctx.globalAlpha = 0.12 + 0.25 * Math.abs(Math.sin(t * 0.8 + i));
-      ctx.lineWidth = 1 + v * 1.5;
+    for (let i = 0; i < 140; i++) {
+      const rz = camZ + 1 + ((((S.hash(i * 1.7) * 90 - camZ) % 90) + 90) % 90);
+      const rx = WALL_X - 0.6 - S.hash(i * 3.3) * 60;
+      const [x, y, s] = P(rx + Math.sin(t * 0.6 + i) * 0.3, 0, rz);
+      if (x > W / 2) continue;
+      ctx.globalAlpha = (0.15 + 0.25 * Math.abs(Math.sin(t * 0.8 + i))) * (1 - fog(rz - camZ));
+      ctx.lineWidth = Math.max(1, 0.03 * s);
       ctx.beginPath();
       ctx.moveTo(x, y);
-      ctx.lineTo(x + 10 + v * 40, y);
+      ctx.lineTo(x + (0.6 + S.hash(i) * 1.4) * s, y);
       ctx.stroke();
     }
+    ctx.restore();
+    // boats far → near
+    const cols = ["#c2412d", "#2f6fd0", "#e3a12a", "#2f9a4b", "#8a3b6b"];
+    boats
+      .map((b) => ({ b, z: b.z + Math.sin(t * 0.05 * b.drift + b.c * 9) * 6 * b.drift }))
+      .filter((o) => o.z - camZ > 0.8)
+      .sort((a, b) => b.z - a.z)
+      .forEach(({ b, z }) => {
+        const [x, y, s] = P(b.x, 0, z);
+        if (x < -100 || x > W / 2 + 60) return;
+        ctx.globalAlpha = 1 - fog(z - camZ) * 0.8;
+        S.boat(ctx, x, y, s * 0.05, cols[(b.c * 5) | 0], t, b.rower);
+      });
     ctx.globalAlpha = 1;
-    // doongas tied along the wall, plus a few out on the water
-    const s = Math.max(0.6, U / 7);
-    for (let i = 0; i < 9; i++) {
-      const wx = 30 + i * 70 + S.hash(i) * 30;
-      const bx = SX + (wx - camX * 1.15) * U;
-      if (bx < -120 || bx > W + 120) continue;
-      S.boat(ctx, bx, top + U * (3 + S.hash(i * 5) * 3), s * 1.1, boatColors[i % 5], t);
+    for (let i = 0; i < 5; i++) {
+      const dz = 6 + i * 4 + ((t * 0.3 + i * 3) % 4);
+      const [x, y, s] = P(WALL_X - 3 - i * 1.3 + Math.sin(t * 0.2 + i), 0, camZ + dz);
+      duck(x, y, s * 0.012, t);
     }
-    for (let i = 0; i < 3; i++) {
-      const span = W + 200;
-      const bx = (((S.hash(i * 9) * span - camX * U * 1.15 + t * (10 + i * 4)) % span) + span) % span - 100;
-      S.boat(ctx, bx, top + U * (12 + i * 5), s * (1.2 + i * 0.25), boatColors[(i + 2) % 5], t, true);
+  }
+
+  function promenade() {
+    // stone pavement between the lake wall and the shops
+    const a = P(WALL_X, 0, camZ + 0.35), b = P(SHOP_X, 0, camZ + 0.35);
+    const c = P(SHOP_X, 0, camZ + 400), d = P(WALL_X, 0, camZ + 400);
+    const pg = ctx.createLinearGradient(0, HOR, 0, H);
+    pg.addColorStop(0, "#c9c1b2");
+    pg.addColorStop(0.3, "#a59c8c");
+    pg.addColorStop(1, "#8f8676");
+    quad(a, b, c, d, pg);
+    // flagstones: staggered rows, only where they're big enough to see
+    const z0 = Math.floor(camZ) + 1;
+    ctx.save();
+    for (let k = z0 + 40; k >= z0; k--) {
+      const dz = k - camZ;
+      const pa = P(0, 0, k), pb = P(0, 0, k + 1);
+      if (pa[1] - pb[1] < 1.2) continue;
+      const off = (k % 2) * 0.45;
+      for (let x = WALL_X + 0.15 + off - 0.9; x < SHOP_X; x += 0.9) {
+        const x0 = Math.max(x, WALL_X + 0.15), x1 = Math.min(x + 0.9, SHOP_X);
+        if (x1 - x0 < 0.1) continue;
+        const v = S.hash(k * 13.1 + Math.round(x * 10));
+        const c0 = 150 + v * 40;
+        const col = S.mix([c0, c0 - 6, c0 - 16], HAZE, fog(dz) * 0.8);
+        quad(P(x0 + 0.03, 0, k + 0.04), P(x1 - 0.03, 0, k + 0.04), P(x1 - 0.03, 0, k + 0.96), P(x0 + 0.03, 0, k + 0.96), S.rgb(col));
+      }
     }
-    for (let i = 0; i < 4; i++) {
-      const span = W + 100;
-      const dx = (((S.hash(i * 31) * span - camX * U * 1.15 + t * (12 + i * 4)) % span) + span) % span - 50;
-      duck(dx + i * 26, top + U * (9 + i * 1.2), s * 0.9, t, 1);
+    ctx.restore();
+    // low stone wall along the lake edge, seen from the inside
+    const w0 = P(WALL_X, 0.5, camZ + 0.35), w1 = P(WALL_X, 0.5, camZ + 400);
+    const w2 = P(WALL_X, 0, camZ + 400), w3 = P(WALL_X, 0, camZ + 0.35);
+    quad(w0, w1, w2, w3, "#857e72");
+    const cap0 = P(WALL_X + 0.2, 0.5, camZ + 0.35), cap1 = P(WALL_X + 0.2, 0.5, camZ + 400);
+    quad(w0, w1, cap1, cap0, "#a8a091");
+    ctx.strokeStyle = "rgba(0,0,0,.18)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    for (let z = Math.ceil(camZ) + 1; z < camZ + 40; z += 1.2) {
+      const p0 = P(WALL_X, 0.5, z), p1 = P(WALL_X, 0, z);
+      ctx.moveTo(p0[0], p0[1]);
+      ctx.lineTo(p1[0], p1[1]);
     }
+    ctx.stroke();
   }
 
   function frame(ms) {
     const t = reduce ? 2 : ms / 1000;
     tick(ms);
 
-    S.sky(ctx, 0, 0, W, PB, [
+    // sky, mountains across the lake, Sarangkot hills
+    S.sky(ctx, 0, 0, W, HOR + 2, [
       [0, "#3f9ad6"],
-      [0.5, "#8fd0ee"],
+      [0.6, "#8fd0ee"],
       [1, "#e2f3f6"],
     ]);
-    S.sun(ctx, W * 0.85, H * 0.1, Math.min(W, H) * 0.035, "#fffbe6", "rgba(255,245,200,.6)");
-    S.clouds(ctx, W, H * 0.1, t * 2, 21, 7, "rgba(255,255,255,.85)", Math.min(1.3, W / 800) + 0.3);
-    const mw = Math.max(W * 1.2, H * 1.2);
-    S.himalaya(ctx, (W - mw) / 2 - camX * U * 0.03, mw, H * 0.44, H * 0.24, { haze: "rgba(220,240,246,.9)", base: "#a8c4d8" });
-    S.hills(ctx, W, H * 0.45, H * 0.05, "#5d9a74", 3.3 + camX * 0.002, PB, "#79b48a");
-    // paragliders off Sarangkot
+    S.sun(ctx, W * 0.82, H * 0.1, Math.min(W, H) * 0.03, "#fffbe6", "rgba(255,245,200,.6)");
+    S.clouds(ctx, W, H * 0.11, t * 2, 21, 7, "rgba(255,255,255,.85)", Math.min(1.3, W / 800) + 0.3);
+    const mw = Math.max(W * 1.3, H * 1.2);
+    S.himalaya(ctx, W * 0.28 - mw / 2, mw, HOR - H * 0.04, H * 0.24, { haze: "rgba(220,240,246,.9)", base: "#a8c4d8" });
+    S.hills(ctx, W, HOR - H * 0.012, H * 0.03, "#5d9a74", 3.3, HOR + 2, "#79b48a");
     const pcol = ["#e34b3c", "#f2c230", "#3d7ad6"];
     for (let i = 0; i < 3; i++) {
-      const px = ((S.hash(i * 3) * W + t * (6 + i * 2) - camX * U * 0.1) % (W + 80) + W + 80) % (W + 80) - 40;
-      S.paraglider(ctx, px, H * (0.18 + i * 0.05) + Math.sin(t * 0.5 + i) * 6, 0.7 + i * 0.15, pcol[i]);
+      const px = ((S.hash(i * 3) * W + t * (6 + i * 2)) % (W + 80)) - 40;
+      S.paraglider(ctx, px, H * (0.16 + i * 0.05) + Math.sin(t * 0.5 + i) * 6, 0.7 + i * 0.15, pcol[i]);
     }
-
-    for (let i = 0; i < shops.length; i++) shop(shops[i], t);
-    // prayer flags strung between rooftops
-    for (let i = 0; i < shops.length - 1; i += 3) {
-      const a = shops[i], b = shops[i + 2];
-      if (!b) break;
-      const x1 = sxw(a.x + a.w * 0.5), x2 = sxw(b.x + b.w * 0.5);
-      if (x2 < 0 || x1 > W) continue;
-      S.flags(ctx, x1, PB - a.h * U, x2, PB - b.h * U, U * 3, t, Math.max(8, U * 1.3));
-    }
-    pavement();
-    for (let i = 0; i < props.length; i++) prop(props[i], t);
+    // ground beyond the shops (rarely seen) then lake, promenade, buildings
+    ctx.fillStyle = "#8f8676";
+    ctx.fillRect(0, HOR, W, H - HOR);
     lake(t);
+    promenade();
+    things
+      .filter((o) => zOf(o) > camZ + 0.4)
+      .sort((a, b) => zOf(b) - zOf(a))
+      .forEach((o) => (o.kind === "shop" ? shop(o) : prop(o, t)));
 
     if (!reduce) requestAnimationFrame(frame);
   }
 
   /* ---------- scroll → walk ---------- */
-  let target = 0, cur = 0, lastMs = 0, walking = false;
+  let target = 0, cur = 0, lastMs = 0, walking = false, binTick = 0;
   const walker = document.querySelector(".w-sagun");
   const walkerFig = walker && walker.querySelector(".w-sagun__fig");
   function readScroll() {
@@ -486,24 +482,24 @@
     const dt = Math.min(0.25, Math.max(0, (ms - lastMs) / 1000));
     lastMs = ms;
     const prev = cur;
-    cur = reduce ? target : cur + (target - cur) * (1 - Math.exp(-dt * 5));
-    if (Math.abs(target - cur) < 0.0001) cur = target;
-    camX = cur * WORLD;
-    const moving = Math.abs(cur - prev) > 0.00004;
+    cur = reduce ? target : cur + (target - cur) * (1 - Math.exp(-dt * 4));
+    if (Math.abs(target - cur) < 0.00005) cur = target;
+    camZ = -cur * LEN;
+    if (++binTick % 30 === 0) placeBins(); // page height can shift as fonts load
+    const moving = Math.abs(cur - prev) > 0.00003;
     if (walkerFig && moving !== walking) {
       walking = moving;
       walkerFig.classList.toggle("is-walking", moving);
-      walker.classList.toggle("is-walking", moving);
     }
   }
 
   function placeBins() {
     const max = document.documentElement.scrollHeight - window.innerHeight;
     if (max <= 0) return;
-    props.forEach((o) => {
+    things.forEach((o) => {
       if (o.kind !== "bin") return;
-      const at = walkEl.offsetTop - window.innerHeight * 0.6 + ((o.line + 0.45) / YAP.length) * walkEl.offsetHeight;
-      o.x = (S.clamp(at / max, 0, 1)) * WORLD + 5; // just ahead of her at that moment
+      const at = walkEl.offsetTop - window.innerHeight * 0.6 + ((o.line + 0.1) / YAP.length) * walkEl.offsetHeight;
+      o.z = -S.clamp(at / max, 0, 1) * LEN + DS + 0.8; // beside her as she starts the line, then behind her
     });
   }
 
@@ -514,18 +510,18 @@
     cvs.width = Math.round(W * DPR);
     cvs.height = Math.round(H * DPR);
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    U = Math.min(H, W * 1.6) / 100;
-    SX = W < 760 ? W * 0.22 : W * 0.14;
-    PB = H * 0.64;
-    PF = H * 0.8;
-    FEET = H * 0.745;
+    F = Math.min(H * 0.9, W * 1.25);
+    HOR = H * 0.47;
+    DS = W < 700 ? 5.2 : 5.6; // how far ahead of us she walks
     if (walker) {
-      const fh = S.clamp(H * 0.2, 104, 190);
+      const s = F / DS;
+      const fh = 1.62 * s * (360 / 344);
       const fw = (fh * 200) / 360;
+      const feetY = HOR + EYE * s;
       walker.style.width = fw + "px";
       walker.style.height = fh + "px";
-      walker.style.left = SX - fw / 2 + "px";
-      walker.style.top = FEET - (344 / 360) * fh + "px";
+      walker.style.left = W / 2 + SAGUN_X * s - fw / 2 + "px";
+      walker.style.top = feetY - (344 / 360) * fh + "px";
     }
     readScroll();
     placeBins();
@@ -539,10 +535,18 @@
     "scroll",
     () => {
       readScroll();
-      if (reduce) frame(0);
+      if (reduce) {
+        frame(0);
+        clearTimeout(stopT);
+        stopT = setTimeout(() => {
+          walking = false;
+          walkerFig && walkerFig.classList.remove("is-walking");
+        }, 350);
+      }
     },
     { passive: true }
   );
+  let stopT = 0;
   resize();
   cur = target;
   updateYap();

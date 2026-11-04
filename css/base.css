@@ -185,6 +185,16 @@ svg {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+  /* the walk cycle only plays while the reader is scrolling, so keep it */
+  .sagun--walk .sagun__leg,
+  .sagun--walk .sagun__swing,
+  .sagun--walk .sagun__body {
+    animation-duration: 0.7s !important;
+    animation-iteration-count: infinite !important;
+  }
+  .sagun--walk .sagun__body {
+    animation-duration: 0.35s !important;
+  }
 }
 
 :focus-visible {

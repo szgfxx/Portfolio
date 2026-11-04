@@ -72,7 +72,7 @@
     const id = "s" + ++uid;
     let smock = "";
     for (let y = 146; y <= 188; y += 4.2) smock += `M56 ${y.toFixed(1)} q11 1.4 22 0 t22 0 t22 0 t22 0 `;
-    const BODICE = "M67 143 Q100 140 133 143 L133 186 Q100 189 67 186 Z";
+    const BODICE = "M65.6 143.5 Q100 139 134.4 143.5 C135 156 134.4 170 133.6 182 Q133.2 187.2 129 188.2 Q100 191.6 71 188.2 Q66.8 187.2 66.4 182 C65.6 170 65 156 65.6 143.5Z";
 
     // arms (bone points with radii)
     const restArm = limb([[69, 139, 5.68], [65, 158, 4.82], [62, 178, 3.96], [61, 194, 3.61], [60, 207, 3.10]]);
@@ -145,18 +145,18 @@
   <g transform="translate(100 0) scale(0.84 1) translate(-100 0)">
   <!-- body: neck, shoulders and torso as ONE skin shape -->
   <path d="M92 110 L92 120 C92 125 89 128 83 129.5 C75 131 69 133 67 139 C65 146 66 160 67 176
-           L69 210 L131 210 L133 176 C134 160 135 146 133 139 C131 133 125 131 117 129.5
+           C68 186 72.6 190 72.6 196 C72.6 201 69.4 204.5 67.4 210 L132.6 210 C130.6 204.5 127.4 201 127.4 196 C127.4 190 132 186 133 176 C134 160 135 146 133 139 C131 133 125 131 117 129.5
            C111 128 108 125 108 120 L108 110 Z" fill="url(#${id}-skin)"/>
   <!-- definition: chin shadow, collarbones, shoulder line, waist -->
   <path d="M93 112 Q100 118 107 112 L107 116 Q100 121 93 116Z" fill="var(--skin-shade)" opacity=".55"/>
   <path d="M84 135 Q91 133 97 136 M103 136 Q109 133 116 135" stroke="var(--skin-shade)" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".8"/>
   <path d="M100 136 L100 140" stroke="var(--skin-shade)" stroke-width="1" opacity=".5"/>
-  <path d="M71 190 Q72 198 71 206 M129 190 Q128 198 129 206" stroke="var(--skin-shade)" stroke-width="1.2" fill="none" opacity=".6"/>
+  <path d="M75 191 Q76.5 196 74.6 203 M125 191 Q123.5 196 125.4 203" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" opacity=".45"/>
   <path d="M99.3 197 q.7 1.6 1.4 0" stroke="var(--skin-shade)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
 
   <!-- straight, baggy low-waist cargo pants pooling at the ankles; each leg is its own group so it can walk -->
   <g class="sagun__leg sagun__leg--l">
-    <path d="M70 206 L101 206 L101 242 L98 334 Q80 338 63 334 C65 290 67 240 70 206Z" fill="var(--pants)"/>
+    <path d="M68 206 L101 206 L101 242 L98 334 Q80 338 63 334 C64 290 63.4 252 64.8 230 C65.6 219 66.8 211 68 206Z" fill="var(--pants)"/>
     <path d="M80 216 Q78 270 74 330 M90 222 Q90 280 88 332" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
     <path d="M65 314 q8 3 16 -1 t16 1 M64 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
     <rect x="64.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
@@ -166,7 +166,7 @@
     <path d="M68 341 h28" stroke="#e9e4d8" stroke-width="2"/>
   </g>
   <g class="sagun__leg sagun__leg--r">
-    <path d="M99 206 L130 206 C133 240 135 290 137 334 Q120 338 102 334 L99 242Z" fill="var(--pants)"/>
+    <path d="M99 206 L132 206 C133.2 211 134.4 219 135.2 230 C136.6 252 136 290 137 334 Q120 338 102 334 L99 242Z" fill="var(--pants)"/>
     <path d="M110 222 Q110 280 112 332 M120 216 Q122 270 126 330" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".55"/>
     <path d="M103 314 q8 3 16 -1 t17 1 M103 324 q9 3 17 -1 t16 1" stroke="var(--pants-dark)" stroke-width="1.1" fill="none" opacity=".7"/>
     <rect x="120.5" y="248" width="15" height="23" rx="2" fill="var(--pants-dark)" opacity=".55"/>
@@ -175,7 +175,7 @@
     <path d="M104 334 h26 c4 6 2 10 -4 10 h-16 c-6 0 -8 -4 -6 -10Z" fill="var(--shoe)"/>
     <path d="M104 341 h28" stroke="#e9e4d8" stroke-width="2"/>
   </g>
-  <path d="M70 204 L130 204 L130 212 L70 212 Z" fill="var(--pants-dark)"/>
+  <path d="M68.2 204 L131.8 204 L132.8 212 L67.2 212 Z" fill="var(--pants-dark)"/>
   <path d="M79 204 v8 M100 204 v8 M121 204 v8" stroke="var(--pants)" stroke-width="2"/>
 
   <!-- tube top: straight fit, cropped above the stomach -->
@@ -183,9 +183,9 @@
   <g clip-path="url(#${id}-bodice)">
     <path d="${smock}" stroke="var(--top-smock)" stroke-width="1.1" fill="none"/>
   </g>
-  <path d="M67 143 Q100 140 133 143" stroke="var(--top-smock)" stroke-width="2.4" fill="none"/>
-  <path d="M67 186 Q100 189 133 186" stroke="var(--top-smock)" stroke-width="1.8" fill="none"/>
-  <path d="M68 188 Q100 191 132 188" stroke="var(--skin-shade)" stroke-width="1.6" fill="none" opacity=".45"/>
+  <path d="M66 143.6 Q100 139.2 134 143.6" stroke="var(--top-smock)" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M70 187.6 Q100 191 130 187.6" stroke="var(--top-smock)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <path d="M72 190.2 Q100 193.4 128 190.2" stroke="var(--skin-shade)" stroke-width="1.4" fill="none" opacity=".35" stroke-linecap="round"/>
 
   </g>
   ${rhodo(85.7, 155, 0.9)}

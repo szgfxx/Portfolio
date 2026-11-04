@@ -115,11 +115,11 @@ body.whimsy {
 .w-bubble {
   position: absolute;
   bottom: 96%;
-  left: 0;
+  left: 50%;
   width: max-content;
   max-width: min(280px, 70vw);
-  transform: rotate(-2deg);
-  transform-origin: 0 100%;
+  transform: translateX(-50%) rotate(-2deg);
+  transform-origin: 50% 100%;
   padding: 10px 16px;
   border-radius: 18px;
   background: #fff;
@@ -133,7 +133,8 @@ body.whimsy {
   content: "";
   position: absolute;
   top: 100%;
-  left: 24px;
+  left: 50%;
+  margin-left: -9px;
   border: 9px solid transparent;
   border-top-color: #fff;
 }
@@ -377,10 +378,14 @@ body.whimsy {
   position: relative;
 }
 .w-sagun {
-  transition: transform 0.8s cubic-bezier(0.3, 0.8, 0.4, 1);
+  transition: opacity 0.5s;
 }
-.w-sagun.is-walking {
-  transform: translateX(3vw);
+.w-sagun.is-away {
+  opacity: 0;
+  pointer-events: none;
+}
+.w-sagun.is-quiet .w-bubble {
+  visibility: hidden;
 }
 .w-bubble {
   min-width: 120px;
@@ -393,6 +398,6 @@ body.whimsy {
   outline-offset: -4px;
 }
 @keyframes bubble-pop {
-  from { transform: scale(0.6) rotate(-6deg); opacity: 0.4; }
-  to { transform: rotate(-2deg); opacity: 1; }
+  from { transform: translateX(-50%) scale(0.6) rotate(-6deg); opacity: 0.4; }
+  to { transform: translateX(-50%) rotate(-2deg); opacity: 1; }
 }
