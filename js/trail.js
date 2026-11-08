@@ -1054,10 +1054,7 @@
     if (Math.abs(target - cur) < 0.0001) cur = target;
 
     const p = S.clamp(cur / 0.9, 0, 1);
-    // the green walk is quick: the first slice of scroll carries us to the snow
-    // line, and the rest of the talk happens on the snow
-    const P1 = 0.12, zSnow = zAtAlt(SNOW_ALT - 150);
-    camZ = p < P1 ? (p / P1) * zSnow : zSnow + ((p - P1) / (1 - P1)) * (TOTAL - 9 - zSnow);
+    camZ = p * (TOTAL - 9);
     const step = reduce ? 0 : Math.sin(camZ * Math.PI * 1.6) * 0.03; // footstep bob
     camY = g(camZ) + EYE + step;
     camX = (bend(camZ + 1) + bend(camZ + 7)) / 2;

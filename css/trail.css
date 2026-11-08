@@ -756,15 +756,6 @@ body.trail {
   padding: 2px 10px;
 }
 
-/* bigger speech bubble */
-.hiker__bubble {
-  max-width: min(400px, 80vw);
-  padding: 14px 20px;
-  font-size: 20px;
-  line-height: 1.35;
-  border-radius: 22px;
-}
-
 @media (max-width: 760px) {
   /* phones: the card sits at the top, Sagun and her bubble below it */
   .climb-card,
@@ -788,10 +779,6 @@ body.trail {
   }
   .climb-card .lokta h3 {
     font-size: 16px;
-  }
-  .hiker__bubble {
-    font-size: 16px;
-    padding: 10px 14px;
   }
 }
 
