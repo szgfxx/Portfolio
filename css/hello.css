@@ -300,11 +300,15 @@ body.go-that .hello__ui {
 }
 
 /* ---------- one-click résumé ---------- */
-.resume-btn {
+.corner-btns {
   position: fixed;
   z-index: 4;
   right: 16px;
   bottom: 16px;
+  display: flex;
+  gap: 10px;
+}
+.resume-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -325,16 +329,28 @@ body.go-that .hello__ui {
 .resume-btn:focus-visible {
   transform: translateY(-3px) rotate(-2deg);
 }
-body.go-this .resume-btn,
-body.go-that .resume-btn {
+body.go-this .corner-btns,
+body.go-that .corner-btns {
   opacity: 0;
   transition: opacity 0.4s;
 }
+.photos-btn {
+  background: linear-gradient(180deg, #2f7f99, #1d5568);
+  animation-delay: 0.7s;
+}
 @media (max-width: 520px) {
-  .resume-btn {
+  .corner-btns {
     right: 12px;
     bottom: 12px;
+    gap: 8px;
+  }
+  .resume-btn {
     font-size: 15px;
     padding: 7px 13px 7px 11px;
+  }
+}
+@media (max-width: 520px), (hover: none) {
+  .hello__keys {
+    display: none;
   }
 }

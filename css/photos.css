@@ -1,0 +1,338 @@
+/* Photo album page: a scrapbook wall of polaroids */
+.album {
+  --hand: "Gaegu", "Mukta", cursive;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.5), transparent 40%),
+    radial-gradient(rgba(107, 66, 38, 0.08) 1px, transparent 1.4px) 0 0 / 14px 14px,
+    var(--paper);
+}
+.album.is-locked {
+  overflow: hidden;
+}
+
+.album__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.album__top nav {
+  display: flex;
+  gap: 8px;
+}
+.album__top a {
+  padding: 6px 12px;
+  border-radius: 99px;
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--cream);
+  box-shadow: 0 2px 8px rgba(42, 29, 20, 0.12);
+}
+.album__top a:hover,
+.album__top a:focus-visible {
+  background: #fff;
+}
+
+.album__main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 16px 72px;
+}
+.album__head {
+  text-align: center;
+  margin: 18px 0 26px;
+}
+.album__kicker {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: var(--red);
+}
+.album__head h1 {
+  margin: 2px 0 6px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(36px, 6vw, 60px);
+  line-height: 1.05;
+}
+.album__sub {
+  margin: 0;
+  font-family: var(--hand);
+  font-size: 23px;
+  color: var(--ink-soft);
+}
+
+/* filter chips */
+.album__filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 0 30px;
+}
+.chip {
+  padding: 6px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 99px;
+  font: 600 13px var(--font-mono);
+  color: var(--ink);
+  background: transparent;
+  cursor: pointer;
+  text-transform: lowercase;
+}
+.chip[aria-pressed="true"] {
+  color: var(--cream);
+  background: var(--ink);
+}
+.chip:hover {
+  background: rgba(42, 29, 20, 0.08);
+}
+.chip[aria-pressed="true"]:hover {
+  background: var(--ink);
+}
+
+/* the wall: even grid, in the order photos are listed */
+.album__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 38px 30px;
+  align-items: start;
+}
+.snap {
+  position: relative;
+  margin: 0;
+  padding: 12px 12px 14px;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(42, 29, 20, 0.18);
+  transform: rotate(var(--r, 0deg));
+  transition: transform 0.35s cubic-bezier(0.3, 1.7, 0.5, 1), box-shadow 0.35s;
+  animation: snap-in 0.6s both;
+}
+.snap[hidden] {
+  display: none;
+}
+.snap::before {
+  /* washi tape */
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 72px;
+  height: 22px;
+  margin-left: -36px;
+  background: rgba(227, 165, 38, 0.55);
+  transform: rotate(calc(var(--r, 0deg) * -1.6));
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.snap:nth-child(3n + 2)::before {
+  background: rgba(47, 127, 153, 0.45);
+}
+.snap:nth-child(3n)::before {
+  background: rgba(179, 32, 42, 0.4);
+}
+.snap:hover,
+.snap:focus-within {
+  transform: rotate(0deg) scale(1.03);
+  box-shadow: 0 16px 34px rgba(42, 29, 20, 0.24);
+  z-index: 1;
+}
+.snap__btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: #eee4cf;
+  cursor: zoom-in;
+}
+.snap__btn img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: var(--focus, 50% 50%);
+}
+.snap h3 {
+  margin: 10px 0 0;
+  font-family: var(--hand);
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 1.05;
+}
+.snap__caption {
+  margin: 4px 0 0;
+  font-family: var(--hand);
+  font-size: 19px;
+  line-height: 1.2;
+  color: var(--ink-soft);
+}
+.snap__meta {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--lake);
+}
+@keyframes snap-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) rotate(var(--r, 0deg));
+  }
+}
+
+/* nothing uploaded yet */
+.album__empty {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 26px;
+  padding-top: 10px;
+}
+.album__empty[hidden] {
+  display: none;
+}
+.album__blank {
+  width: 200px;
+  height: 250px;
+  border: 12px solid #fff;
+  border-bottom-width: 56px;
+  background: linear-gradient(135deg, #e9dab8, #cfe3e6);
+  box-shadow: 0 10px 24px rgba(42, 29, 20, 0.16);
+  transform: rotate(var(--r));
+}
+.album__empty p {
+  flex-basis: 100%;
+  margin: 10px 0 0;
+  text-align: center;
+  font-family: var(--hand);
+  font-size: 24px;
+  color: var(--ink-soft);
+}
+
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(24, 17, 12, 0.86);
+  animation: fade 0.2s both;
+}
+.lightbox[hidden] {
+  display: none;
+}
+.lightbox__card {
+  justify-self: center;
+  max-width: min(960px, 100%);
+  margin: 0;
+  padding: 14px 14px 18px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: pop 0.3s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.lightbox__img {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  margin: 0 auto;
+  object-fit: contain;
+}
+.lightbox__title {
+  margin: 12px 0 0;
+  font-family: var(--hand);
+  font-size: 30px;
+  line-height: 1.05;
+}
+.lightbox__caption {
+  margin: 4px 0 0;
+  font-family: var(--hand);
+  font-size: 21px;
+  color: var(--ink-soft);
+}
+.lightbox__caption:empty,
+.lightbox__meta:empty {
+  display: none;
+}
+.lightbox__meta {
+  margin: 8px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--lake);
+}
+.lightbox__close,
+.lightbox__nav {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 0;
+  border-radius: 50%;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--ink);
+  background: var(--cream);
+  cursor: pointer;
+}
+.lightbox__nav[hidden] {
+  visibility: hidden;
+  display: grid;
+}
+.lightbox__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .album__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 26px 16px;
+  }
+  .snap {
+    padding: 8px 8px 10px;
+  }
+  .snap h3 {
+    font-size: 20px;
+  }
+  .snap__caption {
+    font-size: 16px;
+  }
+  .lightbox {
+    grid-template-columns: 1fr;
+    padding: 64px 12px 12px;
+  }
+  .lightbox__nav {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snap,
+  .lightbox,
+  .lightbox__card {
+    animation: none;
+  }
+}

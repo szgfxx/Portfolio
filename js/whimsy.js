@@ -49,6 +49,7 @@
     bubble.classList.toggle("todo", /^\s*TODO/i.test(text));
     bubble.textContent = text;
     window.SagunAudio.pop();
+    showPhotos(text);
     talk(text);
   }
   // she says it out loud (when sound is on) and her mouth moves while she does
@@ -63,6 +64,26 @@
       talkT = setTimeout(stop, Math.min(4000, 400 + text.length * 45));
     }
   }
+
+  // polaroids for the line she's saying
+  const photoBox = document.querySelector(".w-photos");
+  const photosFor = new Map(YAP.map((y) => [y.text, y.photos || []]));
+  function showPhotos(text) {
+    const list = (photosFor.get(text) || []).map((p) => (typeof p === "string" ? { src: p } : p));
+    photoBox.innerHTML = list
+      .slice(0, 3)
+      .map(
+        (p, i) => `
+      <figure class="w-photo" style="--r:${[-5, 4, -2][i]}deg;--d:${i * 0.12}s">
+        <img src="${esc(p.src)}" alt="${esc(p.caption || p.alt || "photo of Sagun’s")}" loading="lazy" />
+        ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}
+      </figure>`
+      )
+      .join("");
+    photoBox.classList.toggle("has-photos", list.length > 0);
+  }
+  // load them ahead of time so they pop instantly
+  YAP.forEach((y) => (y.photos || []).forEach((p) => (new Image().src = typeof p === "string" ? p : p.src)));
 
   // which line belongs to the current stretch of the walk
   function lineAt() {

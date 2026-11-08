@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sagun's Photo Album</title>
+  <meta name="description" content="Photos of things Sagun has done: research, campus, Nepal, travel and everything in between." />
+  <meta name="theme-color" content="#f4ead5" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;700&family=Yatra+One&family=JetBrains+Mono:wght@400;600&family=Gaegu:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/photos.css" />
+</head>
+<body class="album">
+  <header class="album__top">
+    <a href="index.html">← back to the fork</a>
+    <nav>
+      <a href="this-way.html">this way</a>
+      <a href="that-way.html">that way</a>
+    </nav>
+  </header>
+
+  <main class="album__main">
+    <header class="album__head">
+      <p class="album__kicker" lang="ne">तस्बिरहरू</p>
+      <h1>Sagun's photo album</h1>
+      <p class="album__sub">Things I've done, places I've been, people I've done them with.</p>
+    </header>
+
+    <div class="album__filters" role="toolbar" aria-label="Filter photos" hidden></div>
+
+    <ul class="album__grid" aria-live="polite"></ul>
+
+    <div class="album__empty" hidden>
+      <div class="album__blank" style="--r:-4deg"></div>
+      <div class="album__blank" style="--r:3deg"></div>
+      <div class="album__blank" style="--r:-2deg"></div>
+      <p>Photos are still being developed. Check back soon 📸</p>
+    </div>
+  </main>
+
+  <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo" hidden>
+    <button class="lightbox__close" type="button" aria-label="Close">×</button>
+    <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="Previous photo">‹</button>
+    <figure class="lightbox__card">
+      <img class="lightbox__img" alt="" />
+      <figcaption>
+        <h2 class="lightbox__title"></h2>
+        <p class="lightbox__caption"></p>
+        <p class="lightbox__meta"></p>
+      </figcaption>
+    </figure>
+    <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Next photo">›</button>
+  </div>
+
+  <script src="js/content.js"></script>
+  <script src="js/photos.js"></script>
+</body>
+</html>

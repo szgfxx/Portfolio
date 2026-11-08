@@ -473,3 +473,75 @@ body.whimsy {
     text-align: center;
   }
 }
+
+/* ---------- polaroids that pop up beside her ---------- */
+.w-photos {
+  position: fixed;
+  z-index: 5;
+  right: max(16px, 3vw);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.w-photo {
+  width: clamp(140px, 13vw, 200px);
+  margin: 0 0 -6px;
+  padding: 10px 10px 12px;
+  background: #fff;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  transform: rotate(var(--r));
+  animation: photo-pop 0.45s var(--d) cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+.w-photo:nth-child(even) {
+  margin-right: 34px;
+}
+.w-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: #e9dab8;
+}
+.w-photo figcaption {
+  margin-top: 6px;
+  font-family: var(--hand);
+  font-size: 19px;
+  line-height: 1.1;
+  text-align: center;
+  color: #2a1d14;
+}
+@keyframes photo-pop {
+  from { opacity: 0; transform: translateY(30px) scale(0.7) rotate(calc(var(--r) * -2)); }
+  to { opacity: 1; transform: rotate(var(--r)); }
+}
+@media (max-width: 700px) {
+  /* phones: a little row under the top bar, clear of her bubble */
+  .w-photos {
+    top: 62px;
+    left: 12px;
+    right: 12px;
+    transform: none;
+    flex-direction: row;
+    justify-content: center;
+    gap: 6px;
+  }
+  .w-photo {
+    width: min(30vw, 112px);
+    padding: 5px 5px 7px;
+    margin: 0;
+  }
+  .w-photo:nth-child(even) {
+    margin: 10px 0 0;
+  }
+  .w-photo figcaption {
+    font-size: 15px;
+  }
+}
+.w-intro--aside {
+  margin-top: 10px;
+  font-size: 20px;
+  opacity: 0.8;
+}

@@ -152,6 +152,10 @@
     add(4.5, { kind: "flagline", off: 0, s: 1 });
     for (let z = 60; z < TOTAL - 4; z += 9 + (z % 7)) add(z, { kind: "cairn", off: (z % 2 ? 1 : -1) * (HW + 0.5), s: 1 });
     add(TOTAL, { kind: "summit", off: 0, s: 1 });
+    // locals of the high snow
+    add(zAtAlt(4900), { kind: "leopard", off: -(HW + 1.1), s: 1, dir: 1 });
+    add(zAtAlt(5900), { kind: "yeti", off: HW + 1.5, s: 1 });
+    add(zAtAlt(6900), { kind: "leopard", off: HW + 1.1, s: 1, dir: -1 });
   })();
 
   /* ---------- camera ---------- */
@@ -640,6 +644,233 @@
         ctx.fillRect(x + w / 2 + 1.0 * u, by - 0.45 * u, 0.08 * u, 0.45 * u);
         break;
       }
+      case "yeti": {
+        // a big friendly yeti, waving from beside the trail
+        const h = 3 * u;
+        if (h < 6) break;
+        const k = h / 100;
+        ctx.save();
+        ctx.translate(x, by);
+        ctx.scale(k, k);
+        const fur = "#f3f6fb", shade = "#cfdcec";
+        const shag = (cx, cy, rx, ry, n, rot) => {
+          ctx.beginPath();
+          for (let i = 0; i <= n * 2; i++) {
+            const a = (i / (n * 2)) * Math.PI * 2;
+            const r = i % 2 ? 0.86 : 1.06;
+            const px = Math.cos(a) * rx * r, py = Math.sin(a) * ry * r;
+            const c = Math.cos(rot || 0), sn = Math.sin(rot || 0);
+            const X = cx + px * c - py * sn, Y = cy + px * sn + py * c;
+            i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y);
+          }
+          ctx.closePath();
+        };
+        // legs and feet
+        ctx.fillStyle = shade;
+        ctx.fillRect(-20, -26, 15, 24);
+        ctx.fillRect(5, -26, 15, 24);
+        ctx.fillStyle = "#8fa3b8";
+        ctx.beginPath();
+        ctx.ellipse(-13, -2, 11, 4.5, 0, 0, Math.PI * 2);
+        ctx.ellipse(13, -2, 11, 4.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // resting arm
+        ctx.fillStyle = fur;
+        shag(-31, -52, 9, 24, 7, 0.15);
+        ctx.fill();
+        // body
+        shag(0, -55, 31, 36, 12);
+        ctx.fill();
+        ctx.fillStyle = "rgba(160,182,210,.35)";
+        shag(10, -52, 20, 32, 8);
+        ctx.fill();
+        // waving arm
+        const wave = reduce ? 0 : Math.sin(t * 4) * 0.35;
+        ctx.save();
+        ctx.translate(26, -72);
+        ctx.rotate(-2.5 + wave);
+        ctx.fillStyle = fur;
+        shag(0, 15, 8.5, 18, 7);
+        ctx.fill();
+        ctx.fillStyle = "#8fa3b8";
+        ctx.beginPath();
+        ctx.ellipse(0, 33, 6, 7, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        // head and face
+        ctx.fillStyle = fur;
+        shag(0, -90, 19, 17, 9);
+        ctx.fill();
+        ctx.fillStyle = "#9fb1c4";
+        ctx.beginPath();
+        ctx.ellipse(0, -86, 11, 11.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#1e2430";
+        ctx.beginPath();
+        ctx.arc(-4.5, -89, 2.1, 0, Math.PI * 2);
+        ctx.arc(4.5, -89, 2.1, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = "#1e2430";
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.arc(0, -84, 4.5, 0.2 * Math.PI, 0.8 * Math.PI);
+        ctx.stroke();
+        ctx.restore();
+        break;
+      }
+      case "leopard": {
+        // a snow leopard lying on a rock ledge, head up, long thick tail hanging down
+        const L = 1.6 * u; // nose-to-rump length
+        if (L < 8) break;
+        const k = L / 110;
+        // the ledge
+        const rw = 1.15 * u, rh = 0.55 * u;
+        ctx.fillStyle = "#5f5b54";
+        ctx.beginPath();
+        ctx.moveTo(x - rw, by);
+        ctx.lineTo(x - rw * 0.92, by - rh * 0.8);
+        ctx.lineTo(x - rw * 0.3, by - rh);
+        ctx.lineTo(x + rw * 0.75, by - rh * 0.95);
+        ctx.lineTo(x + rw, by);
+        ctx.fill();
+        ctx.fillStyle = "#7c776d";
+        ctx.beginPath();
+        ctx.moveTo(x - rw * 0.92, by - rh * 0.8);
+        ctx.lineTo(x - rw * 0.3, by - rh);
+        ctx.lineTo(x - rw * 0.1, by - rh * 0.4);
+        ctx.lineTo(x - rw * 0.8, by - rh * 0.3);
+        ctx.fill();
+        ctx.save();
+        ctx.translate(x, by - rh * 0.97);
+        ctx.scale(k * (o.dir || 1), k);
+        const top = "#a9a499", side = "#cfcac0", belly = "#ece8df", spot = "#3f3c38";
+        const fur = ctx.createLinearGradient(0, -36, 0, 0);
+        fur.addColorStop(0, top);
+        fur.addColorStop(0.55, side);
+        fur.addColorStop(1, belly);
+        // tail: thick and fluffy, nearly as long as the body, curling down off the ledge
+        const tail = new Path2D("M-46 -14 C-64 -12 -76 -4 -80 10 C-84 26 -78 40 -64 44");
+        ctx.lineCap = "round";
+        ctx.strokeStyle = side;
+        ctx.lineWidth = 15;
+        ctx.stroke(tail);
+        ctx.strokeStyle = "rgba(255,255,255,.35)";
+        ctx.lineWidth = 6;
+        ctx.stroke(new Path2D("M-50 -18 C-64 -16 -74 -8 -78 6"));
+        ctx.fillStyle = spot;
+        [[-60, -13, 0.3], [-71, -7, 0.8], [-78, 3, 1.3], [-81, 15, 1.5], [-79, 27, 1.9], [-73, 37, 2.3]].forEach(([a, b2, r]) => {
+          ctx.beginPath();
+          ctx.ellipse(a, b2, 3.2, 5.2, r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.beginPath();
+        ctx.arc(-64, 44, 6, 0, Math.PI * 2);
+        ctx.fill();
+        // far legs (in shadow)
+        ctx.fillStyle = "#9d988e";
+        ctx.beginPath();
+        ctx.ellipse(44, -3, 11, 4, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // body silhouette: long, low, deep-chested
+        const body = new Path2D(
+          "M-50 -4 C-54 -14 -50 -24 -38 -26 C-20 -29 0 -27 14 -29 C22 -30 27 -34 30 -40 " + // back to neck
+          "C31 -48 36 -54 43 -54 C49 -54 53 -50 55 -45 C57 -42 57 -39 54 -37 C51 -35 47 -35 44 -34 " + // head
+          "C40 -31 38 -26 37 -20 C37 -14 38 -9 41 -6 C48 -5 56 -5 61 -3 C63 -1 62 1 58 1 " + // chest and forepaw
+          "L28 1 C14 2 -10 2 -26 1 C-36 1 -46 1 -50 -4Z"
+        );
+        ctx.fillStyle = fur;
+        ctx.fill(body);
+        // belly shadow and haunch
+        ctx.fillStyle = "rgba(90,85,78,.18)";
+        ctx.beginPath();
+        ctx.ellipse(-30, -10, 17, 12, -0.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.save();
+        ctx.clip(body);
+        // rosettes: broken rings of dark spots, open in the middle, bigger on the flank
+        const ros = [[-38, -18, 5], [-26, -21, 5.5], [-14, -18, 5.5], [-2, -21, 5], [9, -19, 4.5], [-32, -8, 4.5], [-19, -8, 5], [-6, -9, 4.5], [5, -9, 4], [18, -22, 3.5], [24, -14, 3], [28, -26, 3]];
+        ros.forEach(([a, b2, r], j) => {
+          ctx.fillStyle = "rgba(110,104,96,.35)";
+          ctx.beginPath();
+          ctx.arc(a, b2, r * 0.7, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = spot;
+          const n = 4 + (j % 2);
+          for (let q = 0; q < n; q++) {
+            if ((q + j) % 5 === 3) continue; // a gap, like real rosettes
+            const an = (q / n) * Math.PI * 2 + j;
+            ctx.beginPath();
+            ctx.ellipse(a + Math.cos(an) * r, b2 + Math.sin(an) * r * 0.8, r * 0.42, r * 0.26, an + 1.57, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+        // small solid spots on the neck, legs and head
+        [[32, -36], [35, -30], [33, -24], [40, -14], [46, -6], [52, -4], [38, -46], [42, -50], [36, -42], [-44, -6], [-40, -2]].forEach(([a, b2], j) => {
+          ctx.beginPath();
+          ctx.arc(a, b2, 1.1 + (j % 3) * 0.4, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.restore();
+        // ears: small, rounded, dark-backed
+        ctx.fillStyle = "#6d6860";
+        ctx.beginPath();
+        ctx.ellipse(39, -53, 3.2, 3.8, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#c9c3b8";
+        ctx.beginPath();
+        ctx.ellipse(39.6, -52.4, 1.8, 2.2, -0.3, 0, Math.PI * 2);
+        ctx.fill();
+        // face: pale muzzle, pinkish-grey nose, pale green eye with a dark rim
+        ctx.fillStyle = belly;
+        ctx.beginPath();
+        ctx.ellipse(52, -39.5, 4.6, 3.4, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#9b7f79";
+        ctx.beginPath();
+        ctx.moveTo(54.5, -43);
+        ctx.lineTo(57, -42.4);
+        ctx.lineTo(55.6, -40.6);
+        ctx.fill();
+        ctx.strokeStyle = "#4a4541";
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(55.6, -40.6);
+        ctx.quadraticCurveTo(54, -38, 51, -38.3);
+        ctx.stroke();
+        ctx.fillStyle = "#2c2a27";
+        ctx.beginPath();
+        ctx.ellipse(48, -46.5, 2.6, 1.6, -0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#a8b49a";
+        ctx.beginPath();
+        ctx.ellipse(48.2, -46.6, 1.9, 1.15, -0.15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#111";
+        ctx.beginPath();
+        ctx.ellipse(48.6, -46.6, 0.45, 1.0, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // tear line and whiskers
+        ctx.strokeStyle = "rgba(60,56,52,.6)";
+        ctx.beginPath();
+        ctx.moveTo(49.5, -45.4);
+        ctx.quadraticCurveTo(51, -43, 52, -41.5);
+        ctx.stroke();
+        ctx.strokeStyle = "rgba(255,255,255,.75)";
+        ctx.lineWidth = 0.45;
+        ctx.beginPath();
+        for (let q = 0; q < 4; q++) {
+          ctx.moveTo(53, -39.5 + q * 0.6);
+          ctx.quadraticCurveTo(60, -40 + q * 1.5, 65, -38 + q * 2.4);
+        }
+        ctx.stroke();
+        // near forepaw, big and furry
+        ctx.fillStyle = belly;
+        ctx.beginPath();
+        ctx.ellipse(57, -1.5, 6, 3, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        break;
+      }
       case "summit": {
         const ph = 3 * u;
         if (ph < 3) break;
@@ -823,7 +1054,10 @@
     if (Math.abs(target - cur) < 0.0001) cur = target;
 
     const p = S.clamp(cur / 0.9, 0, 1);
-    camZ = p * (TOTAL - 9);
+    // the green walk is quick: the first slice of scroll carries us to the snow
+    // line, and the rest of the talk happens on the snow
+    const P1 = 0.12, zSnow = zAtAlt(SNOW_ALT - 150);
+    camZ = p < P1 ? (p / P1) * zSnow : zSnow + ((p - P1) / (1 - P1)) * (TOTAL - 9 - zSnow);
     const step = reduce ? 0 : Math.sin(camZ * Math.PI * 1.6) * 0.03; // footstep bob
     camY = g(camZ) + EYE + step;
     camX = (bend(camZ + 1) + bend(camZ + 7)) / 2;
@@ -854,6 +1088,7 @@
       lastAlt = alt;
       const pr = (alt - ALT0) / (ALT1 - ALT0);
       altEl.textContent = alt.toLocaleString();
+      labelEl.textContent = atTop || cur >= 0.9 ? "Annapurna I summit" : placeAt(alt);
       fillEl.style.height = pr * 100 + "%";
       dotEl.style.bottom = pr * 100 + "%";
     }
@@ -866,7 +1101,94 @@
   const hiker = document.querySelector(".hiker");
   const hikerFig = hiker && hiker.querySelector(".hiker__fig");
   const bubble = hiker && hiker.querySelector(".hiker__bubble");
-  const TALK = (window.SAGUN && window.SAGUN.climbTalk) || [];
+  /* ---------- the story: chapters of lines, each with a side card ---------- */
+  const CH = (window.SAGUN && window.SAGUN.climb) || [];
+  const LINES = [];
+  CH.forEach((c, ci) => c.lines.forEach((text) => LINES.push({ text, ci })));
+  const climbEl = document.getElementById("climb");
+  const cardEl = document.querySelector(".climb-card");
+  const navEl = document.querySelector(".topbar__nav");
+  const escH = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const VH_PER_LINE = 60;
+  climbEl.style.height = Math.max(1, LINES.length) * VH_PER_LINE + "vh";
+  // one invisible anchor per chapter, so nav links land on its first line
+  const anchors = CH.map((c) => {
+    const a = document.createElement("div");
+    a.className = "climb__anchor";
+    a.id = c.id;
+    climbEl.appendChild(a);
+    return a;
+  });
+  function placeAnchors() {
+    let L0 = 0;
+    CH.forEach((c, i) => {
+      anchors[i].style.top = ((L0 + 0.3) / LINES.length) * climbEl.offsetHeight - window.innerHeight * 0.5 + "px";
+      L0 += c.lines.length;
+    });
+  }
+  navEl.innerHTML =
+    CH.map((c) => `<a href="#${escH(c.id)}">${escH(c.nav || c.card.title)}</a>`).join("") + `<a href="#summit">Contact</a>`;
+  const navLinks = Array.from(navEl.querySelectorAll("a"));
+
+  function cardHTML(c) {
+    const k = c.card;
+    const rows = (k.rows || [])
+      .map(
+        (r) => `<div class="cc__row">
+          ${r.when ? `<p class="job__when">${escH(r.when)}</p>` : ""}
+          <h3>${escH(r.h)}</h3>
+          ${r.sub ? `<p class="job__org">${escH(r.sub)}</p>` : ""}
+          ${r.points ? `<ul>${r.points.map((x) => `<li>${escH(x)}</li>`).join("")}</ul>` : ""}
+          ${r.link ? `<a class="cc__link" href="${escH(r.link.href)}" target="_blank" rel="noopener">${escH(r.link.text)}</a>` : ""}
+        </div>`
+      )
+      .join("");
+    const chips = (k.chips || [])
+      .map((g) => `<div class="skillgroup"><h3>${escH(g.label)}</h3><p class="chips">${g.items.map((x) => `<span>${escH(x)}</span>`).join("")}</p></div>`)
+      .join("");
+    const list = k.list ? `<ul class="cc__list">${k.list.map((x) => `<li>${escH(x)}</li>`).join("")}</ul>` : "";
+    return `<article class="lokta">
+        <div class="dhaka-strip"></div>
+        <p class="lokta__kicker">${escH(k.kicker || "")}</p>
+        <h2>${escH(k.title)} ${k.ne ? `<span lang="ne">${escH(k.ne)}</span>` : ""}</h2>
+        ${rows}${chips}${list}
+      </article>`;
+  }
+  let shownCh = -2;
+  function showCard(ci) {
+    if (ci === shownCh) return;
+    shownCh = ci;
+    if (ci < 0) {
+      cardEl.classList.remove("is-shown");
+      return;
+    }
+    cardEl.innerHTML = cardHTML(CH[ci]);
+    cardEl.classList.toggle("climb-card--right", ci % 2 === 1);
+    cardEl.classList.remove("is-shown");
+    void cardEl.offsetWidth;
+    cardEl.classList.add("is-shown");
+  }
+  // which line (if any) the reader is on, from where the climb stretch sits on screen
+  function lineIndex() {
+    const r = climbEl.getBoundingClientRect();
+    const p = (window.innerHeight * 0.5 - r.top) / r.height;
+    if (p < 0 || p >= 1) return -1;
+    return Math.min(LINES.length - 1, Math.floor(p * LINES.length));
+  }
+  function updateStory() {
+    const i = lineIndex();
+    const L = i >= 0 ? LINES[i] : null;
+    sayLine(L ? L.text : "");
+    showCard(L ? L.ci : -1);
+    const atSummit = document.getElementById("summit").getBoundingClientRect().top < window.innerHeight * 0.55;
+    atTop = atSummit;
+    const id = L ? CH[L.ci].id : atSummit ? "summit" : "";
+    navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
+  }
+  const labelEl = document.getElementById("alt-label");
+  let atTop = false;
+  const PLACES = [[1100, "Meadow by Phewa"], [2600, "Annapurna foothills"], [4130, "The moraine"], [5100, "Annapurna Base Camp"], [5600, "Camp I"], [6400, "Camp II"], [7200, "Camp III"], [7700, "Camp IV"], [9999, "Summit ridge"]];
+  const placeAt = (a) => PLACES.find((p) => a < p[0])[1];
   const AHEAD = 5.5; // metres ahead on the trail
   let hikerWalking = false, lastCur = 0, said = null;
   function placeHiker(t, reveal) {
@@ -876,7 +1198,7 @@
       const pp = proj(camZ + AHEAD);
       s = pp[2];
       x = pp[0] + 0.2 * s;
-      feet = Math.max(pp[1], H * 0.6); // stay in the lower part of the screen, even on steep snow
+      feet = Math.max(pp[1], H * (W < 760 ? 0.8 : 0.6)); // keep her low (below the card on phones), even on steep snow
     } else {
       // at the top she stops beside the summit pole and takes in the view
       s = H * 0.3 / 1.65;
@@ -894,10 +1216,6 @@
       hikerFig.classList.toggle("is-walking", moving);
       window.SagunAudio.setWalking(moving);
     }
-    // what she's saying follows how far up we are
-    const prog = S.clamp(cur / 0.9, 0, 1);
-    const n = TALK.length;
-    sayLine(reveal >= 0.5 || prog < 0.015 || !n ? "" : TALK[Math.min(n - 1, Math.floor(((prog - 0.015) / 0.985) * n))]);
     // the soundscape follows the climb: birds and drums fade, wind rises, snow crunches
     const a = altOf(camZ + AHEAD);
     const A = window.SagunAudio;
@@ -919,24 +1237,16 @@
     else window.SagunAudio.speak("");
   }
 
-  /* ---------- section label + active nav ---------- */
-  const sections = Array.from(document.querySelectorAll("[data-alt]"));
-  const labelEl = document.getElementById("alt-label");
-  const navLinks = Array.from(document.querySelectorAll(".topbar__nav a"));
-  function updateSection() {
-    let current = null;
-    for (const s of sections) if (s.getBoundingClientRect().top < window.innerHeight * 0.55) current = s;
-    labelEl.textContent = current ? current.dataset.alt : "Phewa lakeside";
-    const id = current && current.id;
-    navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
-  }
-
-  window.addEventListener("resize", resize);
+  window.addEventListener("resize", () => {
+    resize();
+    placeAnchors();
+    updateStory();
+  });
   window.addEventListener(
     "scroll",
     () => {
       readScroll();
-      updateSection();
+      updateStory();
     },
     { passive: true }
   );
@@ -951,7 +1261,12 @@
   );
 
   resize();
-  updateSection();
+  placeAnchors();
+  updateStory();
+  window.addEventListener("load", () => {
+    placeAnchors();
+    updateStory();
+  });
   cur = target;
   requestAnimationFrame(frame);
 })();

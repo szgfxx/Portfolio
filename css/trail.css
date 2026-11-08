@@ -685,3 +685,124 @@ body.trail {
   font-size: clamp(26px, 6.4vw, 64px);
   white-space: nowrap;
 }
+
+/* ---------- the climb: one long stretch, with a card for each chapter ---------- */
+.climb {
+  position: relative;
+}
+.climb__anchor {
+  position: absolute;
+  left: 0;
+  height: 1px;
+  width: 1px;
+}
+.climb-card {
+  position: fixed;
+  z-index: 3;
+  top: 50%;
+  left: 2vw;
+  width: min(420px, 34vw);
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+  transform: translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0s 0.25s;
+}
+.climb-card--right {
+  left: auto;
+  right: max(96px, 7vw); /* clear of the altimeter */
+}
+.climb-card.is-shown {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.25s;
+}
+.climb-card .lokta {
+  max-width: none;
+  margin: 0;
+  animation: card-pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.climb-card .lokta::before {
+  display: none;
+}
+@keyframes card-pop {
+  from { transform: translateY(24px) scale(0.92) rotate(-2deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.cc__row + .cc__row {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(91, 70, 54, 0.3);
+}
+.climb-card .lokta h3 {
+  font-size: 19px;
+}
+.climb-card .lokta ul {
+  margin-top: 6px;
+  font-size: 16px;
+}
+.cc__list li {
+  margin-bottom: 8px;
+}
+.cc__link {
+  display: inline-block;
+  margin-top: 4px;
+  font-weight: 700;
+  color: var(--red);
+}
+.climb-card .chips span {
+  font-size: 14px;
+  padding: 2px 10px;
+}
+
+/* bigger speech bubble */
+.hiker__bubble {
+  max-width: min(400px, 80vw);
+  padding: 14px 20px;
+  font-size: 20px;
+  line-height: 1.35;
+  border-radius: 22px;
+}
+
+@media (max-width: 760px) {
+  /* phones: the card sits at the top, Sagun and her bubble below it */
+  .climb-card,
+  .climb-card--right {
+    top: 56px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: 40vh;
+    transform: none;
+  }
+  .climb-card .lokta {
+    padding: 0 16px 14px;
+    font-size: 15px;
+  }
+  .climb-card .lokta > .dhaka-strip {
+    margin: 0 -16px 10px;
+  }
+  .climb-card .lokta h2 {
+    font-size: 24px;
+  }
+  .climb-card .lokta h3 {
+    font-size: 16px;
+  }
+  .hiker__bubble {
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+}
+
+/* the summit card fits on screen at the very end of the page */
+.stage--summit {
+  min-height: 100vh;
+  padding-top: max(70px, 9vh);
+}
+@media (max-width: 760px) {
+  .climb-card,
+  .climb-card--right {
+    max-height: 36vh;
+  }
+}
