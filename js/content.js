@@ -113,8 +113,8 @@ window.SAGUN = {
     {
       id: "about", nav: "About",
       lines: [
-        "Hi! My name is Sagun, and I go by she/they.",
-        "I’m from Pokhara, Nepal. That big lake down there is basically my backyard 🏞️",
+        "Hi, I’m Sagun, and I want us to climb this together. Let’s go!",
+        "I go by she/they, and I’m from Pokhara, Nepal. That big lake down there is basically my backyard 🏞️",
         "I’m currently a junior at Pitzer College, in Claremont, California…",
         "…and I’m double majoring in Mathematics and Biochemistry.",
       ],

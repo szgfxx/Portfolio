@@ -1023,10 +1023,21 @@
   }
 
   /* ---------- loop ---------- */
+  // ONE timeline drives everything. From the very top of the page until the
+  // summit section starts to slide in, the camera walks at a constant pace and
+  // Sagun says her lines, each getting the same stretch of scroll; her last
+  // line ends as we reach the top. The last screen of scroll reveals the summit.
+  //   cur 0 → 1 : the walk and the talk      cur 1 → 2 : the summit view
   let target = 0, cur = 0;
+  function walkLen() {
+    const sum = document.getElementById("summit");
+    return Math.max(1, sum.offsetTop - window.innerHeight);
+  }
   function readScroll() {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    target = max > 0 ? S.clamp(window.scrollY / max, 0, 1) : 0;
+    const T = walkLen();
+    const max = Math.max(T + 1, document.documentElement.scrollHeight - window.innerHeight);
+    const y = window.scrollY;
+    target = y <= T ? y / T : 1 + S.clamp((y - T) / (max - T), 0, 1);
   }
 
   function resize() {
@@ -1053,14 +1064,14 @@
     cur = reduce ? target : cur + (target - cur) * (1 - Math.exp(-dt * 5));
     if (Math.abs(target - cur) < 0.0001) cur = target;
 
-    const p = S.clamp(cur / 0.9, 0, 1);
+    const p = S.clamp(cur, 0, 1);
     camZ = p * (TOTAL - 9);
     const step = reduce ? 0 : Math.sin(camZ * Math.PI * 1.6) * 0.03; // footstep bob
     camY = g(camZ) + EYE + step;
     camX = (bend(camZ + 1) + bend(camZ + 7)) / 2;
     HORc = H * 0.5 + slopeAt(camZ + 5) * F * 0.2; // look up a little on steep ground
 
-    const reveal = S.smooth(0.9, 0.97, cur);
+    const reveal = S.smooth(1.02, 1.6, cur);
     if (reveal < 0.999) {
       const k0 = Math.floor(camZ / SEG) + 1;
       const kMax = Math.min(k0 + VIEW, NK - 1);
@@ -1079,13 +1090,14 @@
     }
 
     placeHiker(t, reveal);
+    updateStory();
 
-    const alt = Math.round(cur >= 0.9 ? ALT1 : altOf(camZ));
+    const alt = Math.round(cur >= 1 ? ALT1 : altOf(camZ));
     if (alt !== lastAlt) {
       lastAlt = alt;
       const pr = (alt - ALT0) / (ALT1 - ALT0);
       altEl.textContent = alt.toLocaleString();
-      labelEl.textContent = atTop || cur >= 0.9 ? "Annapurna I summit" : placeAt(alt);
+      labelEl.textContent = cur >= 1 ? "Annapurna I summit" : placeAt(alt);
       fillEl.style.height = pr * 100 + "%";
       dotEl.style.bottom = pr * 100 + "%";
     }
@@ -1106,8 +1118,10 @@
   const cardEl = document.querySelector(".climb-card");
   const navEl = document.querySelector(".topbar__nav");
   const escH = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  // scroll per line; the intro screen counts as the first stretch, so the
+  // climb section is one screen shorter than the talk
   const VH_PER_LINE = 60;
-  climbEl.style.height = Math.max(1, LINES.length) * VH_PER_LINE + "vh";
+  climbEl.style.height = Math.max(0, LINES.length * VH_PER_LINE - 100) + "vh";
   // one invisible anchor per chapter, so nav links land on its first line
   const anchors = CH.map((c) => {
     const a = document.createElement("div");
@@ -1117,9 +1131,11 @@
     return a;
   });
   function placeAnchors() {
+    // land each nav link at the scroll where that chapter's first line starts
+    const T = walkLen();
     let L0 = 0;
     CH.forEach((c, i) => {
-      anchors[i].style.top = ((L0 + 0.3) / LINES.length) * climbEl.offsetHeight - window.innerHeight * 0.5 + "px";
+      anchors[i].style.top = (L0 ? ((L0 + 0.05) / LINES.length) * T : 0) - climbEl.offsetTop + "px";
       L0 += c.lines.length;
     });
   }
@@ -1165,25 +1181,28 @@
     void cardEl.offsetWidth;
     cardEl.classList.add("is-shown");
   }
-  // which line (if any) the reader is on, from where the climb stretch sits on screen
+  // which line Sagun is on: read from the same eased progress the camera
+  // uses, so her words and her steps never drift apart
   function lineIndex() {
-    const r = climbEl.getBoundingClientRect();
-    const p = (window.innerHeight * 0.5 - r.top) / r.height;
-    if (p < 0 || p >= 1) return -1;
-    return Math.min(LINES.length - 1, Math.floor(p * LINES.length));
+    if (cur >= 1) return -1;
+    return Math.min(LINES.length - 1, Math.floor(S.clamp(cur, 0, 1) * LINES.length));
   }
+  const introEl = document.querySelector(".stage--intro .intro");
+  let lastNav = null;
   function updateStory() {
     const i = lineIndex();
     const L = i >= 0 ? LINES[i] : null;
     sayLine(L ? L.text : "");
-    showCard(L ? L.ci : -1);
-    const atSummit = document.getElementById("summit").getBoundingClientRect().top < window.innerHeight * 0.55;
-    atTop = atSummit;
-    const id = L ? CH[L.ci].id : atSummit ? "summit" : "";
-    navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
+    // the side card waits until the title has scrolled out of its way
+    const introGone = !introEl || introEl.getBoundingClientRect().bottom < 50;
+    showCard(L && introGone ? L.ci : -1);
+    const id = L ? CH[L.ci].id : cur >= 1 ? "summit" : "";
+    if (id !== lastNav) {
+      lastNav = id;
+      navLinks.forEach((a) => a.classList.toggle("is-active", a.getAttribute("href") === "#" + id));
+    }
   }
   const labelEl = document.getElementById("alt-label");
-  let atTop = false;
   const PLACES = [[1100, "Meadow by Phewa"], [2600, "Annapurna foothills"], [4130, "The moraine"], [5100, "Annapurna Base Camp"], [5600, "Camp I"], [6400, "Camp II"], [7200, "Camp III"], [7700, "Camp IV"], [9999, "Summit ridge"]];
   const placeAt = (a) => PLACES.find((p) => a < p[0])[1];
   const AHEAD = 5.5; // metres ahead on the trail
@@ -1237,14 +1256,10 @@
   window.addEventListener("resize", () => {
     resize();
     placeAnchors();
-    updateStory();
   });
   window.addEventListener(
     "scroll",
-    () => {
-      readScroll();
-      updateStory();
-    },
+    () => readScroll(),
     { passive: true }
   );
   document.querySelectorAll('a[href^="#"]').forEach((a) =>
@@ -1259,10 +1274,9 @@
 
   resize();
   placeAnchors();
-  updateStory();
   window.addEventListener("load", () => {
+    readScroll();
     placeAnchors();
-    updateStory();
   });
   cur = target;
   requestAnimationFrame(frame);
