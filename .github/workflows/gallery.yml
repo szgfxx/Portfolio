@@ -1,5 +1,6 @@
 # Rebuilds the photo gallery whenever photos are added, renamed or removed in
-# assets/album/: shrinks them for the web, writes assets/album-web/album.json,
+# assets/album/: strips GPS locations from the originals, shrinks them for the
+# web, writes assets/album-web/album.json,
 # commits that back, and asks GitHub Pages to republish the site.
 name: Build photo gallery
 
@@ -33,6 +34,15 @@ jobs:
       - name: Install image tools
         run: pip install "pillow>=10,<12" "pillow-heif>=0.16,<2"
 
+      - name: Remove GPS locations from uploaded photos
+        # phone photos record exactly where they were taken; strip that (and
+        # only that) from the originals so it isn't public in the repo
+        run: |
+          sudo apt-get install -y -qq libimage-exiftool-perl > /dev/null
+          exiftool -r -q -overwrite_original -gps:all= -xmp-exif:all= \
+            -ext jpg -ext jpeg -ext heic -ext heif -ext png -ext webp -ext tif -ext tiff \
+            assets/album || true
+
       - name: Build gallery
         run: python tools/build_album.py
 
@@ -42,7 +52,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A assets/album-web
+          git add -A assets/album-web assets/album
           if git diff --cached --quiet; then
             echo "Gallery already up to date."
             exit 0

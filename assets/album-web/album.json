@@ -12,6 +12,18 @@
   "when": "Aug 2026"
  },
  {
+  "file": "Nepal/2026-01-01 Machhapuchhre -- New Year's morning on the Annapurna trail.jpg",
+  "full": "assets/album-web/2026-01-01-machhapuchhre-new-year-s-morn-d26459d39c.webp",
+  "thumb": "assets/album-web/2026-01-01-machhapuchhre-new-year-s-morn-d26459d39c-t.webp",
+  "w": 3024,
+  "h": 2268,
+  "title": "Machhapuchhre",
+  "caption": "New Year's morning on the Annapurna trail",
+  "tag": "Nepal",
+  "date": "2026-01-01",
+  "when": "Jan 2026"
+ },
+ {
   "file": "Nepal/2025-12-31 Into the Annapurna Sanctuary -- on the trail at about 3,900 m.jpg",
   "full": "assets/album-web/2025-12-31-into-the-annapurna-sanctuary--5ee0e1b143.webp",
   "thumb": "assets/album-web/2025-12-31-into-the-annapurna-sanctuary--5ee0e1b143-t.webp",
@@ -22,5 +34,29 @@
   "tag": "Nepal",
   "date": "2025-12-31",
   "when": "Dec 2025"
+ },
+ {
+  "file": "Mexico/2025-08-04 CENEU Mexico -- a lookout over the Pacific in Baja California.jpg",
+  "full": "assets/album-web/2025-08-04-ceneu-mexico-a-lookout-over-t-4f4de4bee9.webp",
+  "thumb": "assets/album-web/2025-08-04-ceneu-mexico-a-lookout-over-t-4f4de4bee9-t.webp",
+  "w": 3200,
+  "h": 2400,
+  "title": "CENEU Mexico",
+  "caption": "a lookout over the Pacific in Baja California",
+  "tag": "Mexico",
+  "date": "2025-08-04",
+  "when": "Aug 2025"
+ },
+ {
+  "file": "Mexico/2025-08-04 Ensenada at sunset -- above the port.jpg",
+  "full": "assets/album-web/2025-08-04-ensenada-at-sunset-above-the--5eb3ab08dc.webp",
+  "thumb": "assets/album-web/2025-08-04-ensenada-at-sunset-above-the--5eb3ab08dc-t.webp",
+  "w": 3200,
+  "h": 2400,
+  "title": "Ensenada at sunset",
+  "caption": "above the port",
+  "tag": "Mexico",
+  "date": "2025-08-04",
+  "when": "Aug 2025"
  }
 ]
