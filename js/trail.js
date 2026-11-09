@@ -1150,7 +1150,7 @@
         (r) => `<div class="cc__row">
           ${r.when ? `<p class="job__when">${escH(r.when)}</p>` : ""}
           <h3>${escH(r.h)}</h3>
-          ${r.sub ? `<p class="job__org">${escH(r.sub)}</p>` : ""}
+          ${r.sub ? `<p class="job__org">${r.subLink ? `<a class="cc__sublink" href="${escH(r.subLink)}" target="_blank" rel="noopener">${escH(r.sub)} ↗</a>` : escH(r.sub)}</p>` : ""}
           ${r.points ? `<ul>${r.points.map((x) => `<li>${escH(x)}</li>`).join("")}</ul>` : ""}
           ${r.link ? `<a class="cc__link" href="${escH(r.link.href)}" target="_blank" rel="noopener">${escH(r.link.text)}</a>` : ""}
         </div>`

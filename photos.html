@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sagun's Photo Album</title>
+  <title>Sagun's Gallery</title>
   <meta name="description" content="Photos of things Sagun has done: research, campus, Nepal, travel and everything in between." />
   <meta name="theme-color" content="#f4ead5" />
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
@@ -25,13 +25,13 @@
   <main class="album__main">
     <header class="album__head">
       <p class="album__kicker" lang="ne">तस्बिरहरू</p>
-      <h1>Sagun's photo album</h1>
+      <h1>Sagun's gallery</h1>
       <p class="album__sub">Things I've done, places I've been, people I've done them with.</p>
     </header>
 
     <div class="album__filters" role="toolbar" aria-label="Filter photos" hidden></div>
 
-    <ul class="album__grid" aria-live="polite"></ul>
+    <div class="gallery" aria-live="polite"></div>
 
     <div class="album__empty" hidden>
       <div class="album__blank" style="--r:-4deg"></div>
@@ -44,7 +44,7 @@
   <div class="lightbox" role="dialog" aria-modal="true" aria-label="Photo" hidden>
     <button class="lightbox__close" type="button" aria-label="Close">×</button>
     <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="Previous photo">‹</button>
-    <figure class="lightbox__card">
+    <figure class="lightbox__fig">
       <img class="lightbox__img" alt="" />
       <figcaption>
         <h2 class="lightbox__title"></h2>
@@ -53,6 +53,7 @@
       </figcaption>
     </figure>
     <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Next photo">›</button>
+    <p class="lightbox__count" aria-hidden="true"></p>
   </div>
 
   <script src="js/content.js"></script>

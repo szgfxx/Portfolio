@@ -793,3 +793,14 @@ body.trail {
     max-height: 36vh;
   }
 }
+.cc__sublink {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+.cc__sublink:hover,
+.cc__sublink:focus-visible {
+  color: var(--red);
+  text-decoration-style: solid;
+}

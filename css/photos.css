@@ -1,4 +1,4 @@
-/* Photo album page: a scrapbook wall of polaroids */
+/* Gallery page: justified rows of photos on warm paper */
 .album {
   --hand: "Gaegu", "Mukta", cursive;
   min-height: 100vh;
@@ -41,13 +41,13 @@
 }
 
 .album__main {
-  max-width: 1180px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 8px 16px 72px;
+  padding: 8px 20px 72px;
 }
 .album__head {
   text-align: center;
-  margin: 18px 0 26px;
+  margin: 14px 0 24px;
 }
 .album__kicker {
   margin: 0;
@@ -69,13 +69,13 @@
   color: var(--ink-soft);
 }
 
-/* filter chips */
+/* category filters */
 .album__filters {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin: 0 0 30px;
+  margin: 0 0 26px;
 }
 .chip {
   padding: 6px 14px;
@@ -87,104 +87,87 @@
   cursor: pointer;
   text-transform: lowercase;
 }
+.chip:hover {
+  background: rgba(42, 29, 20, 0.08);
+}
 .chip[aria-pressed="true"] {
   color: var(--cream);
   background: var(--ink);
 }
-.chip:hover {
-  background: rgba(42, 29, 20, 0.08);
-}
-.chip[aria-pressed="true"]:hover {
-  background: var(--ink);
-}
 
-/* the wall: even grid, in the order photos are listed */
-.album__grid {
+/* the gallery: two columns you scroll down; photos keep their shape */
+.gallery {
+  display: flex;
+  align-items: flex-start;
+  gap: 28px;
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.gallery__col {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+.tile {
   list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 38px 30px;
-  align-items: start;
+  animation: tile-in 0.6s both;
 }
-.snap {
-  position: relative;
-  margin: 0;
-  padding: 12px 12px 14px;
-  background: #fff;
-  box-shadow: 0 10px 24px rgba(42, 29, 20, 0.18);
-  transform: rotate(var(--r, 0deg));
-  transition: transform 0.35s cubic-bezier(0.3, 1.7, 0.5, 1), box-shadow 0.35s;
-  animation: snap-in 0.6s both;
-}
-.snap[hidden] {
-  display: none;
-}
-.snap::before {
-  /* washi tape */
-  content: "";
-  position: absolute;
-  top: -11px;
-  left: 50%;
-  width: 72px;
-  height: 22px;
-  margin-left: -36px;
-  background: rgba(227, 165, 38, 0.55);
-  transform: rotate(calc(var(--r, 0deg) * -1.6));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
-.snap:nth-child(3n + 2)::before {
-  background: rgba(47, 127, 153, 0.45);
-}
-.snap:nth-child(3n)::before {
-  background: rgba(179, 32, 42, 0.4);
-}
-.snap:hover,
-.snap:focus-within {
-  transform: rotate(0deg) scale(1.03);
-  box-shadow: 0 16px 34px rgba(42, 29, 20, 0.24);
-  z-index: 1;
-}
-.snap__btn {
+.tile__btn {
   display: block;
   width: 100%;
+  aspect-ratio: var(--ar);
   padding: 0;
   border: 0;
-  background: #eee4cf;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #e6d8ba;
+  box-shadow: 0 10px 26px rgba(42, 29, 20, 0.16);
   cursor: zoom-in;
 }
-.snap__btn img {
+.tile__btn img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  height: 100%;
   object-fit: cover;
-  object-position: var(--focus, 50% 50%);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.snap h3 {
-  margin: 10px 0 0;
+.tile__btn:hover img,
+.tile__btn:focus-visible img {
+  transform: scale(1.03);
+}
+.tile__btn:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+.tile__label {
+  padding: 12px 4px 0;
+}
+.tile__label h3 {
+  margin: 0;
   font-family: var(--hand);
   font-weight: 700;
-  font-size: 25px;
+  font-size: 26px;
   line-height: 1.05;
 }
-.snap__caption {
-  margin: 4px 0 0;
+.tile__label p {
+  margin: 3px 0 0;
   font-family: var(--hand);
-  font-size: 19px;
+  font-size: 20px;
   line-height: 1.2;
   color: var(--ink-soft);
 }
-.snap__meta {
-  margin: 8px 0 0;
+.tile__label .tile__meta {
+  margin-top: 6px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   color: var(--lake);
 }
-@keyframes snap-in {
+@keyframes tile-in {
   from {
     opacity: 0;
-    transform: translateY(18px) rotate(var(--r, 0deg));
+    transform: translateY(16px);
   }
 }
 
@@ -217,7 +200,7 @@
   color: var(--ink-soft);
 }
 
-/* lightbox */
+/* full-screen viewer */
 .lightbox {
   position: fixed;
   inset: 0;
@@ -225,51 +208,74 @@
   display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 8px;
-  padding: 16px;
-  background: rgba(24, 17, 12, 0.86);
+  gap: 12px;
+  padding: 20px;
+  background: rgba(16, 11, 8, 0.94);
   animation: fade 0.2s both;
 }
 .lightbox[hidden] {
   display: none;
 }
-.lightbox__card {
-  justify-self: center;
-  max-width: min(960px, 100%);
+.lightbox__fig {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-width: 0;
   margin: 0;
-  padding: 14px 14px 18px;
-  background: #fff;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-  animation: pop 0.3s cubic-bezier(0.3, 1.5, 0.5, 1) both;
 }
 .lightbox__img {
   display: block;
   max-width: 100%;
-  max-height: 72vh;
-  margin: 0 auto;
+  max-height: calc(100vh - 150px);
+  border-radius: 4px;
   object-fit: contain;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  transition: opacity 0.2s;
+  animation: pop 0.3s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+}
+.lightbox__img.is-loading {
+  opacity: 0.4;
+}
+.lightbox figcaption {
+  max-width: 720px;
+  padding-top: 14px;
+  text-align: center;
+  color: #f6eedd;
 }
 .lightbox__title {
-  margin: 12px 0 0;
+  margin: 0;
   font-family: var(--hand);
-  font-size: 30px;
+  font-weight: 700;
+  font-size: 28px;
   line-height: 1.05;
 }
 .lightbox__caption {
   margin: 4px 0 0;
   font-family: var(--hand);
   font-size: 21px;
-  color: var(--ink-soft);
+  opacity: 0.9;
 }
+.lightbox__meta {
+  margin: 6px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #9fd0de;
+}
+.lightbox__title:empty,
 .lightbox__caption:empty,
 .lightbox__meta:empty {
   display: none;
 }
-.lightbox__meta {
-  margin: 8px 0 0;
+.lightbox__count {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  margin: 0;
   font-family: var(--font-mono);
   font-size: 12px;
-  color: var(--lake);
+  color: rgba(246, 238, 221, 0.7);
 }
 .lightbox__close,
 .lightbox__nav {
@@ -286,8 +292,8 @@
   cursor: pointer;
 }
 .lightbox__nav[hidden] {
-  visibility: hidden;
   display: grid;
+  visibility: hidden;
 }
 .lightbox__close {
   position: absolute;
@@ -301,38 +307,43 @@
 }
 @keyframes pop {
   from {
-    transform: scale(0.94);
+    transform: scale(0.96);
     opacity: 0;
   }
 }
 
-@media (max-width: 620px) {
-  .album__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 26px 16px;
+@media (max-width: 640px) {
+  .album__main {
+    padding: 4px 14px 56px;
   }
-  .snap {
-    padding: 8px 8px 10px;
+  .gallery__col {
+    gap: 28px;
   }
-  .snap h3 {
-    font-size: 20px;
+  .tile__label h3 {
+    font-size: 23px;
   }
-  .snap__caption {
-    font-size: 16px;
+  .tile__label p {
+    font-size: 18px;
   }
   .lightbox {
     grid-template-columns: 1fr;
-    padding: 64px 12px 12px;
+    padding: 64px 10px 16px;
   }
   .lightbox__nav {
+    display: none;
+  }
+  .lightbox__nav[hidden] {
     display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .snap,
+  .tile,
   .lightbox,
-  .lightbox__card {
+  .lightbox__img {
     animation: none;
+  }
+  .tile__btn img {
+    transition: none;
   }
 }

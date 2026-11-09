@@ -1,0 +1,57 @@
+# Rebuilds the photo gallery whenever photos are added, renamed or removed in
+# assets/album/: shrinks them for the web, writes assets/album-web/album.json,
+# commits that back, and asks GitHub Pages to republish the site.
+name: Build photo gallery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "assets/album/**"
+      - "tools/build_album.py"
+      - ".github/workflows/gallery.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: gallery
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install image tools
+        run: pip install "pillow>=10,<12" "pillow-heif>=0.16,<2"
+
+      - name: Build gallery
+        run: python tools/build_album.py
+
+      - name: Commit and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets/album-web
+          if git diff --cached --quiet; then
+            echo "Gallery already up to date."
+            exit 0
+          fi
+          git commit -m "Update photo gallery"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          # pushes made by this workflow don't always kick off a Pages build, so ask for one
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages/builds" || true

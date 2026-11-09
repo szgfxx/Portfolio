@@ -223,7 +223,7 @@ window.SAGUN = {
         kicker: "summers.log", title: "Summers", ne: "गर्मी",
         rows: [
           { h: "CENEU · Medical Spanish & Global Health", sub: "Mexico", points: ["Community health infrastructure, physician shadowing, medical Spanish."] },
-          { h: "Fellow & Course Assistant", sub: "Nesin Mathematics Village · Şirince, Turkey", when: "Aug 2026", points: ["TA for Intro to Morse Theory; graduate-level algebraic geometry, game theory, probability."] },
+          { h: "Fellow & Course Assistant", sub: "Nesin Mathematics Village · Şirince, Turkey", subLink: "https://sites.google.com/view/baharacu/teaching/mathvillageproject?authuser=0#h.txmot65n6ubn", when: "Aug 2026", points: ["TA for Intro to Morse Theory; graduate-level algebraic geometry, game theory, probability."] },
           { h: "Public Speaking Instructor", sub: "Public Debate Program", points: ["Taught debate and public speaking to 150+ first-gen students."] },
           { h: "Researcher & Peer Mentor", sub: "Incubate Nepal", when: "2023 — 2024", points: ["END TB: data collection and statistical modeling with Harvard scholars.", "SUPARI: mentored students reviewing research on areca nut."] },
         ],
@@ -257,24 +257,23 @@ window.SAGUN = {
     },
   ],
 
-  /* ---------------- PHOTO ALBUM (photos.html) ---------------- */
+  /* ---------------- GALLERY (photos.html) ---------------- */
   //
-  // HOW TO ADD A PHOTO
-  //   1. Put the image file in assets/album/  (jpg / png / webp; under ~1 MB
-  //      each keeps the page fast; phone photos can be shrunk first).
-  //   2. Add a line below. Only `src` and `title` are required:
+  // HOW TO ADD PHOTOS: just upload them to assets/album/ on GitHub
+  // (Add file → Upload files, or git push). GitHub then shrinks them for the
+  // web and puts them on the site by itself in a minute or two.
   //
-  //      { src: "assets/album/turkey-morse.jpg",
-  //        title: "Morse theory summer",
-  //        caption: "TA'ing topology in Istanbul, and a lot of çay.",
-  //        when: "Summer 2025", where: "Istanbul, Turkey",
-  //        tag: "travel" },
+  // The FILENAME becomes the label:
+  //   assets/album/travel/2025-08 Morse theory summer -- TA'ing topology in Şirince.jpg
+  //                ^category ^date   ^title                 ^caption (after " -- ", optional)
+  //   - put photos in a sub-folder (travel/, research/, Nepal/…) to get filter buttons
+  //   - start with a date (2025, 2025-08 or 2025-08-14) to sort them, newest first
+  //   - iPhone .HEIC photos are fine
   //
-  //   `tag` groups photos into the filter buttons at the top of the page
-  //   (any word works: "research", "campus", "Nepal", "travel", "fun"…).
-  //   Photos show in the order you list them. On the wall each photo is
-  //   cropped to a 4:5 polaroid (the full photo shows when clicked); if a
-  //   face gets cut off, add  focus: "50% 20%"  (left-right, top-bottom).
+  // OPTIONAL: for longer labels than a filename allows, add a line here using
+  // the photo's path inside assets/album/:
+  //   { file: "travel/2025-08 Morse theory summer.jpg", caption: "…", where: "Şirince, Turkey" },
+  // (you can set title, caption, when, where, alt)
   album: [
   ],
 
